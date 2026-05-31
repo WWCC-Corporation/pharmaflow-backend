@@ -1,26 +1,63 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {}
+    "net8.0": {
+      "PharmaFlow.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "PharmaFlow.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/PharmaFlow.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PharmaFlow.Application.dll": {}
+        }
+      },
+      "PharmaFlow.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/PharmaFlow.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PharmaFlow.Domain.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "PharmaFlow.Application/1.0.0": {
+      "type": "project",
+      "path": "../PharmaFlow.Application/PharmaFlow.Application.csproj",
+      "msbuildProject": "../PharmaFlow.Application/PharmaFlow.Application.csproj"
+    },
+    "PharmaFlow.Domain/1.0.0": {
+      "type": "project",
+      "path": "../PharmaFlow.Domain/PharmaFlow.Domain.csproj",
+      "msbuildProject": "../PharmaFlow.Domain/PharmaFlow.Domain.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net8.0": []
+    "net8.0": [
+      "PharmaFlow.Application >= 1.0.0"
+    ]
   },
   "packageFolders": {
-    "C:\\Users\\diego\\.nuget\\packages\\": {}
+    "C:\\Users\\fk_dk\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.Infrastructure\\PharmaFlow.Infrastructure.csproj",
+      "projectUniqueName": "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Infrastructure\\PharmaFlow.Infrastructure.csproj",
       "projectName": "PharmaFlow.Infrastructure",
-      "projectPath": "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.Infrastructure\\PharmaFlow.Infrastructure.csproj",
-      "packagesPath": "C:\\Users\\diego\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.Infrastructure\\obj\\",
+      "projectPath": "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Infrastructure\\PharmaFlow.Infrastructure.csproj",
+      "packagesPath": "C:\\Users\\fk_dk\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\diego\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\fk_dk\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -31,7 +68,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Application\\PharmaFlow.Application.csproj": {
+              "projectPath": "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Application\\PharmaFlow.Application.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -43,7 +84,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0": {
@@ -59,12 +101,26 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.25, 8.0.25]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.25, 8.0.25]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[8.0.25, 8.0.25]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Users\\fk_dk\\.dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -5802,19 +5802,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\diego\\.nuget\\packages\\": {}
+    "C:\\Users\\fk_dk\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.API\\PharmaFlow.API.csproj",
+      "projectUniqueName": "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.API\\PharmaFlow.API.csproj",
       "projectName": "PharmaFlow.API",
-      "projectPath": "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.API\\PharmaFlow.API.csproj",
-      "packagesPath": "C:\\Users\\diego\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.API\\obj\\",
+      "projectPath": "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.API\\PharmaFlow.API.csproj",
+      "packagesPath": "C:\\Users\\fk_dk\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\diego\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\fk_dk\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -5826,14 +5826,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.Application\\PharmaFlow.Application.csproj": {
-              "projectPath": "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.Application\\PharmaFlow.Application.csproj"
+            "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Application\\PharmaFlow.Application.csproj": {
+              "projectPath": "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Application\\PharmaFlow.Application.csproj"
             },
-            "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.Infrastructure\\PharmaFlow.Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.Infrastructure\\PharmaFlow.Infrastructure.csproj"
+            "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Infrastructure\\PharmaFlow.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Infrastructure\\PharmaFlow.Infrastructure.csproj"
             },
-            "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.Persistence\\PharmaFlow.Persistence.csproj": {
-              "projectPath": "C:\\Users\\diego\\Desktop\\PharmaFlow\\PharmaFlow.Persistence\\PharmaFlow.Persistence.csproj"
+            "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Persistence\\PharmaFlow.Persistence.csproj": {
+              "projectPath": "C:\\Users\\fk_dk\\Edson\\Dev\\pharmaflow-backend\\PharmaFlow.Persistence\\PharmaFlow.Persistence.csproj"
             }
           }
         }
@@ -5847,7 +5847,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0": {
@@ -5877,6 +5878,24 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.25, 8.0.25]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.win-x64",
+            "version": "[8.0.25, 8.0.25]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.25, 8.0.25]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[8.0.25, 8.0.25]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -5885,7 +5904,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Users\\fk_dk\\.dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

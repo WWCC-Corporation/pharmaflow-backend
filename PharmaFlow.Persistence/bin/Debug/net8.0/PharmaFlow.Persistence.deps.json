@@ -563,7 +563,7 @@
         },
         "runtime": {
           "PharmaFlow.Application.dll": {
-            "assemblyVersion": "1.0.0",
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
@@ -571,7 +571,7 @@
       "PharmaFlow.Domain/1.0.0": {
         "runtime": {
           "PharmaFlow.Domain.dll": {
-            "assemblyVersion": "1.0.0",
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
