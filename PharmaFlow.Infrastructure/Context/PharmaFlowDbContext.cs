@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using PharmaFlow.Persistence;
 
-namespace PharmaFlow.Persistence.Context;
+namespace PharmaFlow.Infrastructure.Context;
 
 public partial class PharmaFlowDbContext : DbContext
 {

@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\PharmaFlow.Persistence.props" />
+</Project>

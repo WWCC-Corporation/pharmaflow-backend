@@ -2,6 +2,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PharmaFlow.Application\PharmaFlow.Application.csproj" />
+    <ProjectReference Include="..\PharmaFlow.Domain\PharmaFlow.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
   </ItemGroup>
 
   <PropertyGroup>

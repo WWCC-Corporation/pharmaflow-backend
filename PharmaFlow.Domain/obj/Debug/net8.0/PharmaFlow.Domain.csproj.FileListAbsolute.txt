@@ -9,3 +9,4 @@ C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\PharmaFlow.
 C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\refint\PharmaFlow.Domain.dll
 C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\PharmaFlow.Domain.pdb
 C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\ref\PharmaFlow.Domain.dll
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\PharmaFlow.Domain.sourcelink.json

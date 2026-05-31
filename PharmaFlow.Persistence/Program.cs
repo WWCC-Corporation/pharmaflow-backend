@@ -1,6 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Cargar variables de entorno desde el archivo .env
+// Cargar variables de entorno desde el archivo .env (Seguridad)
 DotNetEnv.Env.Load("../.env");
 builder.Configuration.AddEnvironmentVariables();
 
