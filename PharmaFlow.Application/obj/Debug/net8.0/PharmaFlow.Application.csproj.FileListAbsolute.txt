@@ -1,0 +1,15 @@
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\bin\Debug\net8.0\PharmaFlow.Application.deps.json
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\bin\Debug\net8.0\PharmaFlow.Application.dll
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\bin\Debug\net8.0\PharmaFlow.Application.pdb
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\bin\Debug\net8.0\PharmaFlow.Domain.dll
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\bin\Debug\net8.0\PharmaFlow.Domain.pdb
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\obj\Debug\net8.0\PharmaFlow.Application.csproj.AssemblyReference.cache
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\obj\Debug\net8.0\PharmaFlow.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\obj\Debug\net8.0\PharmaFlow.Application.AssemblyInfoInputs.cache
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\obj\Debug\net8.0\PharmaFlow.Application.AssemblyInfo.cs
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\obj\Debug\net8.0\PharmaFlow.Application.csproj.CoreCompileInputs.cache
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\obj\Debug\net8.0\PharmaFl.AD84BA0A.Up2Date
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\obj\Debug\net8.0\PharmaFlow.Application.dll
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\obj\Debug\net8.0\refint\PharmaFlow.Application.dll
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\obj\Debug\net8.0\PharmaFlow.Application.pdb
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Application\obj\Debug\net8.0\ref\PharmaFlow.Application.dll

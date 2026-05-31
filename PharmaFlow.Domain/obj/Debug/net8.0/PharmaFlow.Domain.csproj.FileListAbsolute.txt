@@ -1,0 +1,11 @@
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\bin\Debug\net8.0\PharmaFlow.Domain.deps.json
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\bin\Debug\net8.0\PharmaFlow.Domain.dll
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\bin\Debug\net8.0\PharmaFlow.Domain.pdb
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\PharmaFlow.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\PharmaFlow.Domain.AssemblyInfoInputs.cache
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\PharmaFlow.Domain.AssemblyInfo.cs
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\PharmaFlow.Domain.csproj.CoreCompileInputs.cache
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\PharmaFlow.Domain.dll
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\refint\PharmaFlow.Domain.dll
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\PharmaFlow.Domain.pdb
+C:\Users\diego\Desktop\PharmaFlow\PharmaFlow.Domain\obj\Debug\net8.0\ref\PharmaFlow.Domain.dll

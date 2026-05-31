@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "PharmaFlow.Application/1.0.0": {
+        "dependencies": {
+          "PharmaFlow.Domain": "1.0.0"
+        },
+        "runtime": {
+          "PharmaFlow.Application.dll": {}
+        }
+      },
+      "PharmaFlow.Domain/1.0.0": {
+        "runtime": {
+          "PharmaFlow.Domain.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PharmaFlow.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "PharmaFlow.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
