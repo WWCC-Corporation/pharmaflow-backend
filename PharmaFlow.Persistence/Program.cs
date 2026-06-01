@@ -4,12 +4,32 @@ var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load("../.env");
 builder.Configuration.AddEnvironmentVariables();
 
+using PharmaFlow.Application.Interfaces;
+using PharmaFlow.Infrastructure.Context;
+using PharmaFlow.Infrastructure.Repositories;
+using PharmaFlow.Persistence.Middlewares;
+using PharmaFlow.Application.Features.Reportes.Handlers;
+using Microsoft.EntityFrameworkCore;
+
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// 1. Registrar Base de Datos
+builder.Services.AddDbContext<PharmaFlowDbContext>();
+
+// 2. Registrar Unit of Work y Repositorios (Infraestructura Base)
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+// 3. Registrar Handlers y Servicios (Ejemplo de Reportes)
+builder.Services.AddScoped<ObtenerReporteVentasHandler>();
+
 var app = builder.Build();
+
+// Configurar el Middleware Global de Excepciones ANTES de cualquier otra cosa
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -20,29 +40,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseAuthorization();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+// Mapear los endpoints de los controladores
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
