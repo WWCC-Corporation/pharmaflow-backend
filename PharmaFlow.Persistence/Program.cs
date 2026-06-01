@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using PharmaFlow.Application.Features.Compras.Interfaces;
 using PharmaFlow.Application.Features.Compras.Services;
+using PharmaFlow.Application.Features.Caja.Interfaces;
+using PharmaFlow.Application.Features.Caja.Services;
 using PharmaFlow.Application.Features.Reportes.Handlers;
 using PharmaFlow.Application.Interfaces;
+using PharmaFlow.Domain.Ports;
 using PharmaFlow.Infrastructure.Context;
 using PharmaFlow.Infrastructure.Repositories;
 using PharmaFlow.Infrastructure.Repositories.Compras;
@@ -55,6 +58,12 @@ builder.Services.AddScoped<ICompraService, CompraService>();
 
 builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
 builder.Services.AddScoped<ICompraRepository, CompraRepository>();
+
+// ===============================
+// CAMBIO KEVIN: Inyección de dependencias del módulo Caja
+// ===============================
+builder.Services.AddScoped<ICajaService, CajaService>();
+builder.Services.AddScoped<ICajaRepository, CajaRepository>();
 
 var app = builder.Build();
 
