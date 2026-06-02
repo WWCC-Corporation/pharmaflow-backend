@@ -1,13 +1,13 @@
-﻿using PharmaFlow.Domain.Entities;
+﻿using PharmaFlow.Persistence;
 
 namespace PharmaFlow.Domain.Ports.IRepositorios;
 
 public interface IProductRepository
 {
-    Task<producto?> GetByIdAsync(Guid id);
-    Task<IEnumerable<producto>> GetAllAsync();
-    Task AddAsync(producto product);
-    void Update(producto product);
-    void Delete(producto product);
+    Task<Producto?> GetByIdAsync(Guid id);
+    Task<IEnumerable<Producto>> GetAllAsync();
+    Task AddAsync(Producto product);
+    void Update(Producto product);
+    void Delete(Producto product);
     Task SaveChangesAsync();
 }
