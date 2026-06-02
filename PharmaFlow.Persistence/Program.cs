@@ -1,8 +1,30 @@
+using Microsoft.EntityFrameworkCore;
+using PharmaFlow.Domain.Interfaces;
+using PharmaFlow.Infrastructure.Context;
+using PharmaFlow.Infrastructure.Repositories;
+using PharmaFlow.Application.Services;
+using PharmaFlow.Persistence.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Cargar variables de entorno desde el archivo .env (Seguridad)
 DotNetEnv.Env.Load("../.env");
 builder.Configuration.AddEnvironmentVariables();
+
+// Registrar DbContext con PostgreSQL
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// Registrar Repositorios y Unit of Work
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Registrar Servicios de Aplicación
+builder.Services.AddScoped<IClienteService, ClienteService>();
+
+// Registrar Controladores
+builder.Services.AddControllers();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -10,6 +32,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Middleware global de excepciones
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -19,6 +44,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapControllers();
 
 var summaries = new[]
 {
