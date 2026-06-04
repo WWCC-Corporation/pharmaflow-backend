@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Npgsql.NameTranslation;
 using PharmaFlow.Domain.Enums;
+using PharmaFlow.Application.Features.Reportes.Handlers;
 using PharmaFlow.Infrastructure.Context;
+using PharmaFlow.Infrastructure.Repositories.Reportes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +43,8 @@ var allowedOrigins = builder.Configuration
 builder.Services.AddSingleton(dataSource);
 builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
     options.UseNpgsql(dataSource));
+builder.Services.AddScoped<IReporteVentasReader, ReporteVentasReader>();
+builder.Services.AddScoped<ObtenerResumenVentasHandler>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

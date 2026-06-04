@@ -1,0 +1,31 @@
+using Microsoft.AspNetCore.Mvc;
+using PharmaFlow.Application.Features.Reportes.Handlers;
+using PharmaFlow.Application.Features.Reportes.Queries;
+
+namespace PharmaFlow.Persistence.Controllers.Reportes;
+
+[ApiController]
+[Route("api/reportes")]
+public class ReportesController : ControllerBase
+{
+    private readonly ObtenerResumenVentasHandler obtenerResumenVentasHandler;
+
+    public ReportesController(ObtenerResumenVentasHandler obtenerResumenVentasHandler)
+    {
+        this.obtenerResumenVentasHandler = obtenerResumenVentasHandler;
+    }
+
+    [HttpGet("ventas/resumen")]
+    public async Task<IActionResult> ObtenerResumenVentas([FromQuery] DateTime? desde, [FromQuery] DateTime? hasta, CancellationToken cancellationToken)
+    {
+        var query = new ObtenerResumenVentasQuery
+        {
+            Desde = desde,
+            Hasta = hasta
+        };
+
+        var resultado = await obtenerResumenVentasHandler.Handle(query, cancellationToken);
+
+        return Ok(resultado);
+    }
+}
