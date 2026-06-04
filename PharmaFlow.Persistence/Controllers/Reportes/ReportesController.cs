@@ -16,14 +16,8 @@ public class ReportesController : ControllerBase
     }
 
     [HttpGet("ventas/resumen")]
-    public async Task<IActionResult> ObtenerResumenVentas([FromQuery] DateTime? desde, [FromQuery] DateTime? hasta, CancellationToken cancellationToken)
+    public async Task<IActionResult> ObtenerResumenVentas([FromQuery] ObtenerResumenVentasQuery query, CancellationToken cancellationToken)
     {
-        var query = new ObtenerResumenVentasQuery
-        {
-            Desde = desde,
-            Hasta = hasta
-        };
-
         var resultado = await obtenerResumenVentasHandler.Handle(query, cancellationToken);
 
         return Ok(resultado);
