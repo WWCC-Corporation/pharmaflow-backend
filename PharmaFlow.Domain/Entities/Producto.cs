@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PharmaFlow.Persistence;
+namespace PharmaFlow.Domain.Entities;
 
 public partial class Producto
 {
@@ -21,13 +21,13 @@ public partial class Producto
 
     public int StockMinimo { get; set; }
 
-    public bool? RequiereReceta { get; set; }
+    public bool RequiereReceta { get; set; }
 
-    public bool? Activo { get; set; }
+    public bool Activo { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
     public virtual ICollection<Alerta> Alerta { get; set; } = new List<Alerta>();
 
