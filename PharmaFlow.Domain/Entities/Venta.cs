@@ -1,18 +1,14 @@
-using PharmaFlow.Domain.Enums;
 using System;
 using System.Collections.Generic;
+using PharmaFlow.Domain.Enums;
 
-namespace PharmaFlow.Persistence;
+namespace PharmaFlow.Domain.Entities;
 
 public partial class Venta
 {
     public Guid Id { get; set; }
 
-    public EstadoVenta? Estado { get; set; }
-
-    public Moneda? Moneda { get; set; }
-
-    public MetodoPago? Metodo { get; set; }
+    public Guid IdSucursal { get; set; }
 
     public Guid? IdCliente { get; set; }
 
@@ -20,9 +16,15 @@ public partial class Venta
 
     public Guid? IdTurnoCaja { get; set; }
 
-    public DateTime? Fecha { get; set; }
+    public DateTime Fecha { get; set; }
 
-    public decimal? TipoCambio { get; set; }
+    public MetodoPago? Metodo { get; set; }
+
+    public EstadoVenta Estado { get; set; }
+
+    public Moneda Moneda { get; set; }
+
+    public decimal TipoCambio { get; set; }
 
     public decimal MontoTotal { get; set; }
 
@@ -34,6 +36,8 @@ public partial class Venta
 
     public virtual Cliente? IdClienteNavigation { get; set; }
 
+    public virtual Sucursale IdSucursalNavigation { get; set; } = null!;
+
     public virtual TurnosCaja? IdTurnoCajaNavigation { get; set; }
 
     public virtual Usuario? IdUsuarioNavigation { get; set; }
@@ -42,5 +46,3 @@ public partial class Venta
 
     public virtual ICollection<MovimientosCaja> MovimientosCajas { get; set; } = new List<MovimientosCaja>();
 }
-
-

@@ -1,28 +1,30 @@
-using PharmaFlow.Domain.Enums;
 using System;
 using System.Collections.Generic;
+using PharmaFlow.Domain.Enums;
 
-namespace PharmaFlow.Persistence;
+namespace PharmaFlow.Domain.Entities;
 
 public partial class Alerta
 {
     public Guid Id { get; set; }
 
-    public TipoAlerta? Tipo { get; set; }
+    public Guid IdSucursal { get; set; }
 
     public Guid? IdProducto { get; set; }
 
     public Guid? IdLote { get; set; }
 
+    public TipoAlerta? Tipo { get; set; }
+
     public string? Mensaje { get; set; }
 
-    public bool? Leida { get; set; }
+    public bool Leida { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public virtual Lote? IdLoteNavigation { get; set; }
 
     public virtual Producto? IdProductoNavigation { get; set; }
+
+    public virtual Sucursale IdSucursalNavigation { get; set; } = null!;
 }
-
-
