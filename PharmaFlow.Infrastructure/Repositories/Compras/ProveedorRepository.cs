@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PharmaFlow.Application.Features.Compras.Interfaces;
+using PharmaFlow.Application.Contracts.Persistence;
 using PharmaFlow.Infrastructure.Context;
 using PharmaFlow.Persistence;
 

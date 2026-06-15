@@ -1,6 +1,9 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using PharmaFlow.Application.Features.Compras.Commands.Compras;
 using PharmaFlow.Application.Features.Compras.DTOs.Compras;
-using PharmaFlow.Application.Features.Compras.Interfaces;
+using PharmaFlow.Application.Features.Compras.Queries.Compras;
 
 namespace PharmaFlow.Persistence.Controllers.Compras;
 
@@ -8,24 +11,24 @@ namespace PharmaFlow.Persistence.Controllers.Compras;
 [Route("api/compras")]
 public class ComprasController : ControllerBase
 {
-    private readonly ICompraService _compraService;
+    private readonly IMediator _mediator;
 
-    public ComprasController(ICompraService compraService)
+    public ComprasController(IMediator mediator)
     {
-        _compraService = compraService;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var compras = await _compraService.GetAllAsync();
+        var compras = await _mediator.Send(new ListarComprasQuery());
         return Ok(compras);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var compra = await _compraService.GetByIdAsync(id);
+        var compra = await _mediator.Send(new ObtenerCompraPorIdQuery(id));
 
         if (compra is null)
         {
@@ -40,7 +43,7 @@ public class ComprasController : ControllerBase
     {
         try
         {
-            var compra = await _compraService.CreateAsync(dto);
+            var compra = await _mediator.Send(new CrearCompraCommand(dto));
 
             return CreatedAtAction(
                 nameof(GetById),
@@ -48,9 +51,9 @@ public class ComprasController : ControllerBase
                 compra
             );
         }
-        catch (ArgumentException ex)
+        catch (ValidationException ex)
         {
-            return BadRequest(new { Message = ex.Message });
+            return BadRequest(new { Errors = ex.Errors.Select(e => e.ErrorMessage) });
         }
         catch (KeyNotFoundException ex)
         {

@@ -1,6 +1,9 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using PharmaFlow.Application.Features.Compras.Commands.Proveedores;
 using PharmaFlow.Application.Features.Compras.DTOs.Proveedores;
-using PharmaFlow.Application.Features.Compras.Interfaces;
+using PharmaFlow.Application.Features.Compras.Queries.Proveedores;
 
 namespace PharmaFlow.Persistence.Controllers.Compras;
 
@@ -8,24 +11,24 @@ namespace PharmaFlow.Persistence.Controllers.Compras;
 [Route("api/proveedores")]
 public class ProveedoresController : ControllerBase
 {
-    private readonly IProveedorService _proveedorService;
+    private readonly IMediator _mediator;
 
-    public ProveedoresController(IProveedorService proveedorService)
+    public ProveedoresController(IMediator mediator)
     {
-        _proveedorService = proveedorService;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var proveedores = await _proveedorService.GetAllAsync();
+        var proveedores = await _mediator.Send(new ListarProveedoresQuery());
         return Ok(proveedores);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var proveedor = await _proveedorService.GetByIdAsync(id);
+        var proveedor = await _mediator.Send(new ObtenerProveedorPorIdQuery(id));
 
         if (proveedor is null)
         {
@@ -40,7 +43,7 @@ public class ProveedoresController : ControllerBase
     {
         try
         {
-            var proveedor = await _proveedorService.CreateAsync(dto);
+            var proveedor = await _mediator.Send(new CrearProveedorCommand(dto));
 
             return CreatedAtAction(
                 nameof(GetById),
@@ -48,9 +51,9 @@ public class ProveedoresController : ControllerBase
                 proveedor
             );
         }
-        catch (ArgumentException ex)
+        catch (ValidationException ex)
         {
-            return BadRequest(new { Message = ex.Message });
+            return BadRequest(new { Errors = ex.Errors.Select(e => e.ErrorMessage) });
         }
     }
 
@@ -59,7 +62,7 @@ public class ProveedoresController : ControllerBase
     {
         try
         {
-            var proveedor = await _proveedorService.UpdateAsync(id, dto);
+            var proveedor = await _mediator.Send(new ActualizarProveedorCommand(id, dto));
 
             if (proveedor is null)
             {
@@ -68,16 +71,16 @@ public class ProveedoresController : ControllerBase
 
             return Ok(proveedor);
         }
-        catch (ArgumentException ex)
+        catch (ValidationException ex)
         {
-            return BadRequest(new { Message = ex.Message });
+            return BadRequest(new { Errors = ex.Errors.Select(e => e.ErrorMessage) });
         }
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var eliminado = await _proveedorService.DeleteAsync(id);
+        var eliminado = await _mediator.Send(new DesactivarProveedorCommand(id));
 
         if (!eliminado)
         {

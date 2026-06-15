@@ -1,6 +1,6 @@
 using PharmaFlow.Persistence;
 
-namespace PharmaFlow.Application.Features.Compras.Interfaces;
+namespace PharmaFlow.Application.Contracts.Persistence;
 
 public interface ICompraRepository
 {

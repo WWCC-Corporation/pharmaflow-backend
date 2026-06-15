@@ -1,6 +1,9 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PharmaFlow.Application.Features.Compras.Interfaces;
-using PharmaFlow.Application.Features.Compras.Services;
+using PharmaFlow.Application.Common.Behaviors;
+using PharmaFlow.Application.Contracts.Persistence;
+using PharmaFlow.Application.Features.Compras.Handlers.Compras;
 using PharmaFlow.Application.Features.Reportes.Handlers;
 using PharmaFlow.Application.Interfaces;
 using PharmaFlow.Infrastructure.Context;
@@ -46,12 +49,19 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<ObtenerReporteVentasHandler>();
 
 // ===============================
-// CAMBIO ALEXANDRO: Inyección de dependencias del módulo Abastecimiento / Compras
-// Aquí se conectan las interfaces de Application con sus implementaciones.
-// Esto respeta la arquitectura hexagonal y separación de responsabilidades.
+// CAMBIO ALEXANDRO: Módulo Abastecimiento / Compras (CQRS con MediatR y FluentValidation)
+// Se registran:
+//  - MediatR: descubre Commands, Queries y Handlers del módulo.
+//  - FluentValidation: descubre los Validators del módulo.
+//  - ValidationBehavior: pipeline que valida cada Command/Query antes del Handler.
+//  - Repositorios concretos (Infrastructure) que implementan los contratos de Application.
 // ===============================
-builder.Services.AddScoped<IProveedorService, ProveedorService>();
-builder.Services.AddScoped<ICompraService, CompraService>();
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(CrearCompraHandler).Assembly));
+
+builder.Services.AddValidatorsFromAssembly(typeof(CrearCompraHandler).Assembly);
+
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
 builder.Services.AddScoped<ICompraRepository, CompraRepository>();
