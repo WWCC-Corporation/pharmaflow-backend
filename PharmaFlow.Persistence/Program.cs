@@ -3,8 +3,12 @@ using Npgsql;
 using Npgsql.NameTranslation;
 using PharmaFlow.Domain.Enums;
 using PharmaFlow.Application.Features.Reportes.Handlers;
+using PharmaFlow.Application.Features.Compras.Handlers;
+using PharmaFlow.Application.Features.Proveedores.Handlers;
 using PharmaFlow.Infrastructure.Context;
 using PharmaFlow.Infrastructure.Repositories.Reportes;
+using PharmaFlow.Infrastructure.Repositories.Compras;
+using PharmaFlow.Infrastructure.Repositories.Proveedores;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +49,24 @@ builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
     options.UseNpgsql(dataSource));
 builder.Services.AddScoped<IReporteVentasReader, ReporteVentasReader>();
 builder.Services.AddScoped<ObtenerResumenVentasHandler>();
+
+// ===============================
+// Modulo Abastecimiento: Proveedores (Alexandro)
+// ===============================
+builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
+builder.Services.AddScoped<ListarProveedoresHandler>();
+builder.Services.AddScoped<ObtenerProveedorPorIdHandler>();
+builder.Services.AddScoped<CrearProveedorHandler>();
+builder.Services.AddScoped<ActualizarProveedorHandler>();
+builder.Services.AddScoped<DesactivarProveedorHandler>();
+
+// ===============================
+// Modulo Abastecimiento: Compras (Alexandro)
+// ===============================
+builder.Services.AddScoped<ICompraRepository, CompraRepository>();
+builder.Services.AddScoped<ListarComprasHandler>();
+builder.Services.AddScoped<ObtenerCompraPorIdHandler>();
+builder.Services.AddScoped<CrearCompraHandler>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
