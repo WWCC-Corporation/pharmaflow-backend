@@ -1,21 +1,21 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+<<<<<<< HEAD
 using PharmaFlow.Application.Common.Behaviors;
 using PharmaFlow.Application.Contracts.Persistence;
 using PharmaFlow.Application.Features.Compras.Handlers.Compras;
+=======
+using Npgsql;
+using Npgsql.NameTranslation;
+using PharmaFlow.Domain.Enums;
+>>>>>>> origin/dev
 using PharmaFlow.Application.Features.Reportes.Handlers;
-using PharmaFlow.Application.Interfaces;
 using PharmaFlow.Infrastructure.Context;
-using PharmaFlow.Infrastructure.Repositories;
-using PharmaFlow.Infrastructure.Repositories.Compras;
-using PharmaFlow.Persistence.Middlewares;
+using PharmaFlow.Infrastructure.Repositories.Reportes;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cargar variables de entorno desde el archivo .env.
-// Se intenta cargar desde la raíz del proyecto o desde la carpeta anterior,
-// dependiendo de cómo se ejecute la API.
 var envPathRoot = Path.Combine(Directory.GetCurrentDirectory(), ".env");
 var envPathParent = Path.Combine(Directory.GetCurrentDirectory(), "..", ".env");
 
@@ -30,10 +30,34 @@ else if (File.Exists(envPathParent))
 
 builder.Configuration.AddEnvironmentVariables();
 
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("No se encontro la cadena de conexion 'ConnectionStrings__DefaultConnection'.");
+
+var enumNameTranslator = new NpgsqlNullNameTranslator();
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<EstadoCompra>("estado_compra", enumNameTranslator);
+dataSourceBuilder.MapEnum<EstadoVenta>("estado_venta", enumNameTranslator);
+dataSourceBuilder.MapEnum<MetodoPago>("metodo_pago", enumNameTranslator);
+dataSourceBuilder.MapEnum<Moneda>("moneda", enumNameTranslator);
+dataSourceBuilder.MapEnum<TipoAlerta>("tipo_alerta", enumNameTranslator);
+dataSourceBuilder.MapEnum<TipoMovimiento>("tipo_movimiento", enumNameTranslator);
+dataSourceBuilder.MapEnum<TipoMovimientoCaja>("tipo_movimiento_caja", enumNameTranslator);
+var dataSource = dataSourceBuilder.Build();
+
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
+builder.Services.AddSingleton(dataSource);
+builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
+    options.UseNpgsql(dataSource));
+builder.Services.AddScoped<IReporteVentasReader, ReporteVentasReader>();
+builder.Services.AddScoped<ObtenerResumenVentasHandler>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+<<<<<<< HEAD
 
 // 1. Registrar Base de Datos
 // Se mantiene la configuración base actualizada por Diego.
@@ -65,13 +89,29 @@ builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavi
 
 builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
 builder.Services.AddScoped<ICompraRepository, CompraRepository>();
+=======
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DefaultCors", policy =>
+    {
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+        else
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+    });
+});
+>>>>>>> origin/dev
 
 var app = builder.Build();
 
-// Configurar el Middleware Global de Excepciones ANTES de cualquier otra cosa.
-app.UseMiddleware<GlobalExceptionMiddleware>();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -80,14 +120,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("DefaultCors");
+
 app.UseAuthorization();
 
-// ===============================
-// CAMBIO ALEXANDRO: Mapeo de Controllers
-// Permite que la API reconozca rutas como:
-// GET /api/proveedores
-// POST /api/compras
-// ===============================
 app.MapControllers();
 
 app.Run();

@@ -1,12 +1,14 @@
-using PharmaFlow.Domain.Enums;
 using System;
 using System.Collections.Generic;
+using PharmaFlow.Domain.Enums;
 
-namespace PharmaFlow.Persistence;
+namespace PharmaFlow.Domain.Entities;
 
 public partial class MovimientoInventario
 {
     public Guid Id { get; set; }
+
+    public Guid IdSucursal { get; set; }
 
     public TipoMovimiento Tipo { get; set; }
 
@@ -24,7 +26,7 @@ public partial class MovimientoInventario
 
     public Guid? UsuarioId { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public virtual Compra? IdCompraNavigation { get; set; }
 
@@ -34,9 +36,9 @@ public partial class MovimientoInventario
 
     public virtual Producto? IdProductoNavigation { get; set; }
 
+    public virtual Sucursale IdSucursalNavigation { get; set; } = null!;
+
     public virtual Venta? IdVentaNavigation { get; set; }
 
     public virtual Usuario? Usuario { get; set; }
 }
-
-

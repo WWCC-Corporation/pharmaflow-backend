@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PharmaFlow.Persistence;
+namespace PharmaFlow.Domain.Entities;
 
 public partial class VStockFefo
 {
+    public Guid? IdSucursal { get; set; }
+
+    public string? Sucursal { get; set; }
+
     public Guid? Id { get; set; }
 
     public string? Nombre { get; set; }
