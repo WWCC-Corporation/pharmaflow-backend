@@ -1,15 +1,7 @@
-using FluentValidation;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-<<<<<<< HEAD
-using PharmaFlow.Application.Common.Behaviors;
-using PharmaFlow.Application.Contracts.Persistence;
-using PharmaFlow.Application.Features.Compras.Handlers.Compras;
-=======
 using Npgsql;
 using Npgsql.NameTranslation;
 using PharmaFlow.Domain.Enums;
->>>>>>> origin/dev
 using PharmaFlow.Application.Features.Reportes.Handlers;
 using PharmaFlow.Infrastructure.Context;
 using PharmaFlow.Infrastructure.Repositories.Reportes;
@@ -57,39 +49,6 @@ builder.Services.AddScoped<ObtenerResumenVentasHandler>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-<<<<<<< HEAD
-
-// 1. Registrar Base de Datos
-// Se mantiene la configuración base actualizada por Diego.
-builder.Services.AddDbContext<PharmaFlowDbContext>();
-
-// 2. Registrar Unit of Work y Repositorios generales
-// Configuración base de arquitectura agregada por Diego.
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-// 3. Registrar Handlers y Servicios de reportes
-// Configuración base de reportes agregada por Diego.
-builder.Services.AddScoped<ObtenerReporteVentasHandler>();
-
-// ===============================
-// CAMBIO ALEXANDRO: Módulo Abastecimiento / Compras (CQRS con MediatR y FluentValidation)
-// Se registran:
-//  - MediatR: descubre Commands, Queries y Handlers del módulo.
-//  - FluentValidation: descubre los Validators del módulo.
-//  - ValidationBehavior: pipeline que valida cada Command/Query antes del Handler.
-//  - Repositorios concretos (Infrastructure) que implementan los contratos de Application.
-// ===============================
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssembly(typeof(CrearCompraHandler).Assembly));
-
-builder.Services.AddValidatorsFromAssembly(typeof(CrearCompraHandler).Assembly);
-
-builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
-builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
-builder.Services.AddScoped<ICompraRepository, CompraRepository>();
-=======
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DefaultCors", policy =>
@@ -108,7 +67,6 @@ builder.Services.AddCors(options =>
         }
     });
 });
->>>>>>> origin/dev
 
 var app = builder.Build();
 
