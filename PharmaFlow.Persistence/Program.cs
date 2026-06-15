@@ -1,42 +1,95 @@
 using Microsoft.EntityFrameworkCore;
-using PharmaFlow.Domain.Interfaces;
+using Npgsql;
+using Npgsql.NameTranslation;
+using PharmaFlow.Domain.Enums;
+using PharmaFlow.Application.Features.Clientes.Handlers;
+using PharmaFlow.Application.Features.Ventas.Handlers;
 using PharmaFlow.Infrastructure.Context;
-using PharmaFlow.Infrastructure.Repositories;
-using PharmaFlow.Application.Services;
-using PharmaFlow.Persistence.Middleware;
+using PharmaFlow.Infrastructure.Repositories.Clientes;
+using PharmaFlow.Infrastructure.Repositories.Ventas;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cargar variables de entorno desde el archivo .env (Seguridad)
-DotNetEnv.Env.Load("../.env");
+var envPathRoot = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+var envPathParent = Path.Combine(Directory.GetCurrentDirectory(), "..", ".env");
+
+if (File.Exists(envPathRoot))
+{
+    DotNetEnv.Env.Load(envPathRoot);
+}
+else if (File.Exists(envPathParent))
+{
+    DotNetEnv.Env.Load(envPathParent);
+}
+
 builder.Configuration.AddEnvironmentVariables();
 
-// Registrar DbContext con PostgreSQL
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("No se encontro la cadena de conexion 'ConnectionStrings__DefaultConnection'.");
+
+var enumNameTranslator = new NpgsqlNullNameTranslator();
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<EstadoCompra>("estado_compra", enumNameTranslator);
+dataSourceBuilder.MapEnum<EstadoVenta>("estado_venta", enumNameTranslator);
+dataSourceBuilder.MapEnum<MetodoPago>("metodo_pago", enumNameTranslator);
+dataSourceBuilder.MapEnum<Moneda>("moneda", enumNameTranslator);
+dataSourceBuilder.MapEnum<TipoAlerta>("tipo_alerta", enumNameTranslator);
+dataSourceBuilder.MapEnum<TipoMovimiento>("tipo_movimiento", enumNameTranslator);
+dataSourceBuilder.MapEnum<TipoMovimientoCaja>("tipo_movimiento_caja", enumNameTranslator);
+var dataSource = dataSourceBuilder.Build();
+
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
+builder.Services.AddSingleton(dataSource);
 builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(dataSource));
 
-// Registrar Repositorios y Unit of Work
+// ===============================
+// Modulo Core Business: Clientes (Eds)
+// ===============================
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ListarClientesHandler>();
+builder.Services.AddScoped<ObtenerClientePorIdHandler>();
+builder.Services.AddScoped<CrearClienteHandler>();
+builder.Services.AddScoped<ActualizarClienteHandler>();
+builder.Services.AddScoped<DesactivarClienteHandler>();
 
-// Registrar Servicios de Aplicación
-builder.Services.AddScoped<IClienteService, ClienteService>();
+// ===============================
+// Modulo Core Business: Ventas (Eds)
+// ===============================
+builder.Services.AddScoped<IVentaRepository, VentaRepository>();
+builder.Services.AddScoped<ListarVentasHandler>();
+builder.Services.AddScoped<ObtenerVentaPorIdHandler>();
+builder.Services.AddScoped<CrearVentaHandler>();
+builder.Services.AddScoped<AnularVentaHandler>();
 
-// Registrar Controladores
 builder.Services.AddControllers();
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DefaultCors", policy =>
+    {
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+        else
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+    });
+});
 
 var app = builder.Build();
 
-// Middleware global de excepciones
-app.UseMiddleware<ExceptionMiddleware>();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -45,31 +98,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("DefaultCors");
+
+app.UseAuthorization();
+
 app.MapControllers();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
