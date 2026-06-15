@@ -434,3 +434,9 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.ide
+
+# Documentos internos y scripts de base de datos locales
+ARQUITECTURA.md
+DOCUMENTO_TECNICO_PHARMAFLOW.md
+GUIA_EQUIPO_MODULOS.md
+db/
