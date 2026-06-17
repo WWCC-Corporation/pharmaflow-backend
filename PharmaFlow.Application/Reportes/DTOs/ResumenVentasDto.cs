@@ -1,4 +1,4 @@
-namespace PharmaFlow.Application.Features.Reportes.DTOs;
+namespace PharmaFlow.Application.Reportes.DTOs;
 
 public class ResumenVentasDto
 {

@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Npgsql.NameTranslation;
 using PharmaFlow.Domain.Enums;
-using PharmaFlow.Application.Features.Reportes.Handlers;
-using PharmaFlow.Infrastructure.Context;
-using PharmaFlow.Infrastructure.Repositories.Reportes;
+using PharmaFlow.Application.Reportes.Handlers;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Reportes;
+using PharmaFlow.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

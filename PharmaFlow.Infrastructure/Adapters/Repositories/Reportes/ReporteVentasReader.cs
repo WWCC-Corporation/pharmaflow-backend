@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using PharmaFlow.Application.Features.Reportes.DTOs;
-using PharmaFlow.Application.Features.Reportes.Handlers;
-using PharmaFlow.Application.Features.Reportes.Queries;
+using PharmaFlow.Application.Reportes.DTOs;
+using PharmaFlow.Application.Reportes.Handlers;
+using PharmaFlow.Application.Reportes.Queries;
 using PharmaFlow.Domain.Enums;
-using PharmaFlow.Infrastructure.Context;
+using PharmaFlow.Infrastructure.Data;
 
-namespace PharmaFlow.Infrastructure.Repositories.Reportes;
+namespace PharmaFlow.Infrastructure.Adapters.Repositories.Reportes;
 
 public class ReporteVentasReader : IReporteVentasReader
 {

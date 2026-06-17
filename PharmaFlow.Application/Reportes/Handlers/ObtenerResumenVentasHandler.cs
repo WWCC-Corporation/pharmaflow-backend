@@ -1,7 +1,7 @@
-using PharmaFlow.Application.Features.Reportes.DTOs;
-using PharmaFlow.Application.Features.Reportes.Queries;
+using PharmaFlow.Application.Reportes.DTOs;
+using PharmaFlow.Application.Reportes.Queries;
 
-namespace PharmaFlow.Application.Features.Reportes.Handlers;
+namespace PharmaFlow.Application.Reportes.Handlers;
 
 public class ObtenerResumenVentasHandler
 {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using PharmaFlow.Application.Features.Reportes.Handlers;
-using PharmaFlow.Application.Features.Reportes.Queries;
+using PharmaFlow.Application.Reportes.Handlers;
+using PharmaFlow.Application.Reportes.Queries;
 
 namespace PharmaFlow.Persistence.Controllers.Reportes;
 

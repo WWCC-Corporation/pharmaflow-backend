@@ -1,4 +1,4 @@
-namespace PharmaFlow.Application.Features.Reportes.Queries;
+namespace PharmaFlow.Application.Reportes.Queries;
 
 public class ObtenerResumenVentasQuery
 {
