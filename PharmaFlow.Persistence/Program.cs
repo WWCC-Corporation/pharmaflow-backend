@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Npgsql.NameTranslation;
+using PharmaFlow.Application.Dashboard.Handlers;
 using PharmaFlow.Domain.Enums;
 using PharmaFlow.Application.Reportes.Handlers;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Dashboard;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Reportes;
 using PharmaFlow.Infrastructure.Data;
 
@@ -43,6 +45,8 @@ var allowedOrigins = builder.Configuration
 builder.Services.AddSingleton(dataSource);
 builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
     options.UseNpgsql(dataSource));
+builder.Services.AddScoped<IDashboardReader, DashboardReader>();
+builder.Services.AddScoped<ObtenerResumenDashboardHandler>();
 builder.Services.AddScoped<IReporteVentasReader, ReporteVentasReader>();
 builder.Services.AddScoped<ObtenerResumenVentasHandler>();
 
