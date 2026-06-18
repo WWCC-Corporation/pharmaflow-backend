@@ -4,7 +4,10 @@ using Npgsql.NameTranslation;
 using PharmaFlow.Application.Dashboard.Handlers;
 using PharmaFlow.Domain.Enums;
 using PharmaFlow.Application.Reportes.Handlers;
+using PharmaFlow.Application.Proveedores.Handlers;
+using PharmaFlow.Domain.Ports.Repositories;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Dashboard;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Proveedores;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Reportes;
 using PharmaFlow.Infrastructure.Data;
 
@@ -49,6 +52,12 @@ builder.Services.AddScoped<IDashboardReader, DashboardReader>();
 builder.Services.AddScoped<ObtenerResumenDashboardHandler>();
 builder.Services.AddScoped<IReporteVentasReader, ReporteVentasReader>();
 builder.Services.AddScoped<ObtenerResumenVentasHandler>();
+builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
+builder.Services.AddScoped<RegistrarProveedorHandler>();
+builder.Services.AddScoped<ActualizarProveedorHandler>();
+builder.Services.AddScoped<DesactivarProveedorHandler>();
+builder.Services.AddScoped<ListarProveedoresHandler>();
+builder.Services.AddScoped<ObtenerProveedorPorIdHandler>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
