@@ -49,6 +49,8 @@ builder.Services.AddScoped<IDashboardReader, DashboardReader>();
 builder.Services.AddScoped<ObtenerResumenDashboardHandler>();
 builder.Services.AddScoped<IReporteVentasReader, ReporteVentasReader>();
 builder.Services.AddScoped<ObtenerResumenVentasHandler>();
+builder.Services.AddScoped<IReporteInventarioReader, ReporteInventarioReader>();
+builder.Services.AddScoped<ObtenerResumenInventarioHandler>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
