@@ -6,4 +6,9 @@ namespace PharmaFlow.Persistence.Controllers;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
+    [HttpPost("login")]
+    public IActionResult Login()
+    {
+        return Ok();
+    }
 }
