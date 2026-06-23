@@ -11,4 +11,10 @@ public class UsuariosController : ControllerBase
     {
         return Ok();
     }
+
+    [HttpGet("{id}")]
+    public IActionResult Obtener(Guid id)
+    {
+        return Ok();
+    }
 }
