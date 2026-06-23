@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using PharmaFlow.Application.Features.Clientes.Commands;
-using PharmaFlow.Application.Features.Clientes.DTOs;
-using PharmaFlow.Application.Features.Clientes.Handlers;
-using PharmaFlow.Application.Features.Clientes.Queries;
+using PharmaFlow.Application.Clientes.Commands;
+using PharmaFlow.Application.Clientes.DTOs;
+using PharmaFlow.Application.Clientes.Handlers;
+using PharmaFlow.Application.Clientes.Queries;
 
 namespace PharmaFlow.Persistence.Controllers.Clientes;
 

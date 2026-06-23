@@ -1,16 +1,16 @@
-using PharmaFlow.Application.Features.Clientes.DTOs;
+using PharmaFlow.Persistence;
 
-namespace PharmaFlow.Application.Features.Clientes.Handlers;
+namespace PharmaFlow.Application.Clientes.Handlers;
 
 public interface IClienteRepository
 {
-    Task<List<ClienteResponseDto>> ListarAsync(CancellationToken cancellationToken);
+    Task<List<Cliente>> ListarAsync(CancellationToken cancellationToken);
 
-    Task<ClienteResponseDto?> ObtenerPorIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Cliente?> ObtenerPorIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<ClienteResponseDto> CrearAsync(CreateClienteDto dto, CancellationToken cancellationToken);
+    Task<Cliente> CrearAsync(Cliente cliente, CancellationToken cancellationToken);
 
-    Task<ClienteResponseDto?> ActualizarAsync(Guid id, UpdateClienteDto dto, CancellationToken cancellationToken);
+    Task<Cliente?> ActualizarAsync(Cliente cliente, CancellationToken cancellationToken);
 
     Task<bool> DesactivarAsync(Guid id, CancellationToken cancellationToken);
 }

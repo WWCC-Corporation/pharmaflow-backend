@@ -1,14 +1,14 @@
-using PharmaFlow.Application.Features.Ventas.DTOs;
+using PharmaFlow.Persistence;
 
-namespace PharmaFlow.Application.Features.Ventas.Handlers;
+namespace PharmaFlow.Application.Ventas.Handlers;
 
 public interface IVentaRepository
 {
-    Task<List<VentaResponseDto>> ListarAsync(CancellationToken cancellationToken);
+    Task<List<Venta>> ListarAsync(CancellationToken cancellationToken);
 
-    Task<VentaResponseDto?> ObtenerPorIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Venta?> ObtenerPorIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<VentaResponseDto> CrearAsync(CreateVentaDto dto, CancellationToken cancellationToken);
+    Task<Venta> CrearAsync(Venta venta, CancellationToken cancellationToken);
 
     Task<bool> AnularAsync(Guid id, CancellationToken cancellationToken);
 }

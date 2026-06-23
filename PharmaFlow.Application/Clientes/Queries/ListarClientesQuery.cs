@@ -1,4 +1,4 @@
-namespace PharmaFlow.Application.Features.Clientes.Queries;
+namespace PharmaFlow.Application.Clientes.Queries;
 
 public class ListarClientesQuery
 {

@@ -1,6 +1,6 @@
-using PharmaFlow.Application.Features.Ventas.Commands;
+using PharmaFlow.Application.Ventas.Commands;
 
-namespace PharmaFlow.Application.Features.Ventas.Handlers;
+namespace PharmaFlow.Application.Ventas.Handlers;
 
 public class AnularVentaHandler
 {

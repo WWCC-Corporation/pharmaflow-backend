@@ -1,4 +1,4 @@
-namespace PharmaFlow.Application.Features.Ventas.Queries;
+namespace PharmaFlow.Application.Ventas.Queries;
 
 public class ObtenerVentaPorIdQuery
 {

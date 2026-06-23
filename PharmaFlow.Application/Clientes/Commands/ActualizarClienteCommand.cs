@@ -1,6 +1,6 @@
-using PharmaFlow.Application.Features.Clientes.DTOs;
+using PharmaFlow.Application.Clientes.DTOs;
 
-namespace PharmaFlow.Application.Features.Clientes.Commands;
+namespace PharmaFlow.Application.Clientes.Commands;
 
 public class ActualizarClienteCommand
 {

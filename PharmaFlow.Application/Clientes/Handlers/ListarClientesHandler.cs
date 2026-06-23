@@ -1,7 +1,8 @@
-using PharmaFlow.Application.Features.Clientes.DTOs;
-using PharmaFlow.Application.Features.Clientes.Queries;
+using PharmaFlow.Application.Clientes.DTOs;
+using PharmaFlow.Application.Clientes.Queries;
+using PharmaFlow.Persistence;
 
-namespace PharmaFlow.Application.Features.Clientes.Handlers;
+namespace PharmaFlow.Application.Clientes.Handlers;
 
 public class ListarClientesHandler
 {
@@ -12,8 +13,19 @@ public class ListarClientesHandler
         this.clienteRepository = clienteRepository;
     }
 
-    public Task<List<ClienteResponseDto>> Handle(ListarClientesQuery query, CancellationToken cancellationToken)
+    public async Task<List<ClienteResponseDto>> Handle(ListarClientesQuery query, CancellationToken cancellationToken)
     {
-        return clienteRepository.ListarAsync(cancellationToken);
+        var clientes = await clienteRepository.ListarAsync(cancellationToken);
+
+        return clientes.Select(c => new ClienteResponseDto
+        {
+            Id = c.Id,
+            Dni = c.Dni,
+            Nombres = c.Nombres,
+            Apellidos = c.Apellidos,
+            Telefono = c.Telefono,
+            Correo = c.Correo,
+            Activo = c.Activo
+        }).ToList();
     }
 }

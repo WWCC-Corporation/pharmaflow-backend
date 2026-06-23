@@ -1,6 +1,6 @@
 using PharmaFlow.Domain.Enums;
 
-namespace PharmaFlow.Application.Features.Ventas.DTOs;
+namespace PharmaFlow.Application.Ventas.DTOs;
 
 public class VentaResponseDto
 {

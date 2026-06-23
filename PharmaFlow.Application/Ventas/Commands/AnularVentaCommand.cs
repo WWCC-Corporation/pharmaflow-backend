@@ -1,4 +1,4 @@
-namespace PharmaFlow.Application.Features.Ventas.Commands;
+namespace PharmaFlow.Application.Ventas.Commands;
 
 public class AnularVentaCommand
 {

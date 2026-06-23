@@ -1,7 +1,8 @@
-using PharmaFlow.Application.Features.Clientes.DTOs;
-using PharmaFlow.Application.Features.Clientes.Queries;
+using PharmaFlow.Application.Clientes.DTOs;
+using PharmaFlow.Application.Clientes.Queries;
+using PharmaFlow.Persistence;
 
-namespace PharmaFlow.Application.Features.Clientes.Handlers;
+namespace PharmaFlow.Application.Clientes.Handlers;
 
 public class ObtenerClientePorIdHandler
 {
@@ -12,8 +13,24 @@ public class ObtenerClientePorIdHandler
         this.clienteRepository = clienteRepository;
     }
 
-    public Task<ClienteResponseDto?> Handle(ObtenerClientePorIdQuery query, CancellationToken cancellationToken)
+    public async Task<ClienteResponseDto?> Handle(ObtenerClientePorIdQuery query, CancellationToken cancellationToken)
     {
-        return clienteRepository.ObtenerPorIdAsync(query.Id, cancellationToken);
+        var cliente = await clienteRepository.ObtenerPorIdAsync(query.Id, cancellationToken);
+
+        if (cliente is null)
+        {
+            return null;
+        }
+
+        return new ClienteResponseDto
+        {
+            Id = cliente.Id,
+            Dni = cliente.Dni,
+            Nombres = cliente.Nombres,
+            Apellidos = cliente.Apellidos,
+            Telefono = cliente.Telefono,
+            Correo = cliente.Correo,
+            Activo = cliente.Activo
+        };
     }
 }

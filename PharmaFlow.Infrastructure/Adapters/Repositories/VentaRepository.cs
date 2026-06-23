@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PharmaFlow.Application.Features.Ventas.DTOs;
-using PharmaFlow.Application.Features.Ventas.Handlers;
+using PharmaFlow.Application.Ventas.Handlers;
 using PharmaFlow.Domain.Enums;
 using PharmaFlow.Infrastructure.Context;
 using PharmaFlow.Persistence;
@@ -16,71 +15,50 @@ public class VentaRepository : IVentaRepository
         this.context = context;
     }
 
-    public async Task<List<VentaResponseDto>> ListarAsync(CancellationToken cancellationToken)
+    public async Task<List<Venta>> ListarAsync(CancellationToken cancellationToken)
     {
-        var ventas = await context.Ventas
+        return await context.Ventas
             .AsNoTracking()
             .Include(v => v.DetalleVenta)
             .OrderByDescending(v => v.Fecha)
             .ToListAsync(cancellationToken);
-
-        return ventas.Select(MapToDto).ToList();
     }
 
-    public async Task<VentaResponseDto?> ObtenerPorIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Venta?> ObtenerPorIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var venta = await context.Ventas
+        return await context.Ventas
             .AsNoTracking()
             .Include(v => v.DetalleVenta)
             .FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
-
-        return venta is null ? null : MapToDto(venta);
     }
 
-    public async Task<VentaResponseDto> CrearAsync(CreateVentaDto dto, CancellationToken cancellationToken)
+    public async Task<Venta> CrearAsync(Venta venta, CancellationToken cancellationToken)
     {
-        ValidarDatosCreacion(dto);
+        ValidarDatosCreacion(venta);
 
         await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
-        var venta = new Venta
+        venta.Id = Guid.NewGuid();
+        venta.Estado = EstadoVenta.completada;
+        venta.Fecha = DateTime.UtcNow;
+        if (!venta.TipoCambio.HasValue || venta.TipoCambio == 0)
         {
-            Id = Guid.NewGuid(),
-            Estado = EstadoVenta.completada,
-            Moneda = dto.Moneda,
-            Metodo = dto.Metodo,
-            IdCliente = dto.IdCliente,
-            IdUsuario = dto.IdUsuario,
-            IdTurnoCaja = dto.IdTurnoCaja,
-            Fecha = DateTime.UtcNow,
-            TipoCambio = dto.TipoCambio ?? 1,
-            MontoTotal = dto.MontoTotal,
-            MontoRecibido = dto.MontoRecibido,
-            Vuelto = dto.Vuelto
-        };
+            venta.TipoCambio = 1;
+        }
 
-        foreach (var detalleDto in dto.Detalles)
+        foreach (var detalle in venta.DetalleVenta)
         {
-            ValidarDetalle(detalleDto);
+            ValidarDetalle(detalle);
 
-            var detalle = new DetalleVenta
-            {
-                Id = Guid.NewGuid(),
-                IdVenta = venta.Id,
-                IdLote = detalleDto.IdLote,
-                IdProducto = detalleDto.IdProducto,
-                Cantidad = detalleDto.Cantidad,
-                PrecioUnitario = detalleDto.PrecioUnitario
-            };
+            detalle.Id = Guid.NewGuid();
+            detalle.IdVenta = venta.Id;
 
-            venta.DetalleVenta.Add(detalle);
-
-            if (detalleDto.IdLote.HasValue)
+            if (detalle.IdLote.HasValue)
             {
                 await DescontarStockAsync(
-                    detalleDto.IdLote.Value,
-                    detalleDto.IdProducto,
-                    detalleDto.Cantidad,
+                    detalle.IdLote.Value,
+                    detalle.IdProducto,
+                    detalle.Cantidad,
                     venta,
                     detalle,
                     cancellationToken);
@@ -91,7 +69,7 @@ public class VentaRepository : IVentaRepository
         await context.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
 
-        return MapToDto(venta);
+        return venta;
     }
 
     public async Task<bool> AnularAsync(Guid id, CancellationToken cancellationToken)
@@ -190,20 +168,20 @@ public class VentaRepository : IVentaRepository
         });
     }
 
-    private static void ValidarDatosCreacion(CreateVentaDto dto)
+    private static void ValidarDatosCreacion(Venta venta)
     {
-        if (dto.Detalles.Count == 0)
+        if (venta.DetalleVenta == null || venta.DetalleVenta.Count == 0)
         {
             throw new ArgumentException("La venta debe tener al menos un detalle.");
         }
 
-        if (dto.MontoTotal <= 0)
+        if (venta.MontoTotal <= 0)
         {
             throw new ArgumentException("El monto total debe ser mayor a cero.");
         }
     }
 
-    private static void ValidarDetalle(CreateDetalleVentaDto detalle)
+    private static void ValidarDetalle(DetalleVenta detalle)
     {
         if (detalle.Cantidad <= 0)
         {
@@ -214,35 +192,5 @@ public class VentaRepository : IVentaRepository
         {
             throw new ArgumentException("Cada detalle debe incluir un producto.");
         }
-    }
-
-    private static VentaResponseDto MapToDto(Venta venta)
-    {
-        return new VentaResponseDto
-        {
-            Id = venta.Id,
-            Estado = venta.Estado,
-            Moneda = venta.Moneda,
-            Metodo = venta.Metodo,
-            IdCliente = venta.IdCliente,
-            IdUsuario = venta.IdUsuario,
-            IdTurnoCaja = venta.IdTurnoCaja,
-            Fecha = venta.Fecha,
-            TipoCambio = venta.TipoCambio,
-            MontoTotal = venta.MontoTotal,
-            MontoRecibido = venta.MontoRecibido,
-            Vuelto = venta.Vuelto,
-            Detalles = venta.DetalleVenta
-                .Select(d => new DetalleVentaResponseDto
-                {
-                    Id = d.Id,
-                    IdVenta = d.IdVenta,
-                    IdLote = d.IdLote,
-                    IdProducto = d.IdProducto,
-                    Cantidad = d.Cantidad,
-                    PrecioUnitario = d.PrecioUnitario
-                })
-                .ToList()
-        };
     }
 }

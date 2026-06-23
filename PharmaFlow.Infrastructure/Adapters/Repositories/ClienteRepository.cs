@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PharmaFlow.Application.Features.Clientes.DTOs;
-using PharmaFlow.Application.Features.Clientes.Handlers;
+using PharmaFlow.Application.Clientes.Handlers;
 using PharmaFlow.Infrastructure.Context;
 using PharmaFlow.Persistence;
 
@@ -15,106 +14,91 @@ public class ClienteRepository : IClienteRepository
         this.context = context;
     }
 
-    public async Task<List<ClienteResponseDto>> ListarAsync(CancellationToken cancellationToken)
+    public async Task<List<Cliente>> ListarAsync(CancellationToken cancellationToken)
     {
-        var clientes = await context.Clientes
+        return await context.Clientes
             .AsNoTracking()
             .OrderBy(c => c.Apellidos)
             .ThenBy(c => c.Nombres)
             .ToListAsync(cancellationToken);
-
-        return clientes.Select(MapToDto).ToList();
     }
 
-    public async Task<ClienteResponseDto?> ObtenerPorIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Cliente?> ObtenerPorIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var cliente = await context.Clientes
+        return await context.Clientes
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
-
-        return cliente is null ? null : MapToDto(cliente);
     }
 
-    public async Task<ClienteResponseDto> CrearAsync(CreateClienteDto dto, CancellationToken cancellationToken)
+    public async Task<Cliente> CrearAsync(Cliente cliente, CancellationToken cancellationToken)
     {
-        ValidarDatosCreacion(dto);
-        await ValidarDniUnicoAsync(dto.Dni, null, cancellationToken);
+        ValidarDatosCreacion(cliente);
+        await ValidarDniUnicoAsync(cliente.Dni, null, cancellationToken);
 
-        var cliente = new Cliente
-        {
-            Id = Guid.NewGuid(),
-            Dni = dto.Dni?.Trim(),
-            Nombres = dto.Nombres?.Trim(),
-            Apellidos = dto.Apellidos?.Trim(),
-            Telefono = dto.Telefono?.Trim(),
-            Correo = dto.Correo?.Trim(),
-            Activo = true
-        };
+        cliente.Id = Guid.NewGuid();
+        cliente.Activo = true;
 
         context.Clientes.Add(cliente);
         await context.SaveChangesAsync(cancellationToken);
 
-        return MapToDto(cliente);
+        return cliente;
     }
 
-    public async Task<ClienteResponseDto?> ActualizarAsync(
-        Guid id,
-        UpdateClienteDto dto,
-        CancellationToken cancellationToken)
+    public async Task<Cliente?> ActualizarAsync(Cliente cliente, CancellationToken cancellationToken)
     {
-        var cliente = await context.Clientes.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+        var existing = await context.Clientes.FirstOrDefaultAsync(c => c.Id == cliente.Id, cancellationToken);
 
-        if (cliente is null)
+        if (existing is null)
         {
             return null;
         }
 
-        if (dto.Dni is not null)
+        if (cliente.Dni is not null)
         {
-            var dni = dto.Dni.Trim();
+            var dni = cliente.Dni.Trim();
 
             if (string.IsNullOrWhiteSpace(dni))
             {
                 throw new ArgumentException("El DNI no puede estar vacío.");
             }
 
-            await ValidarDniUnicoAsync(dni, id, cancellationToken);
-            cliente.Dni = dni;
+            await ValidarDniUnicoAsync(dni, cliente.Id, cancellationToken);
+            existing.Dni = dni;
         }
 
-        if (dto.Nombres is not null)
+        if (cliente.Nombres is not null)
         {
-            if (string.IsNullOrWhiteSpace(dto.Nombres))
+            if (string.IsNullOrWhiteSpace(cliente.Nombres))
             {
                 throw new ArgumentException("Los nombres no pueden estar vacíos.");
             }
 
-            cliente.Nombres = dto.Nombres.Trim();
+            existing.Nombres = cliente.Nombres.Trim();
         }
 
-        if (dto.Apellidos is not null)
+        if (cliente.Apellidos is not null)
         {
-            cliente.Apellidos = dto.Apellidos.Trim();
+            existing.Apellidos = cliente.Apellidos.Trim();
         }
 
-        if (dto.Telefono is not null)
+        if (cliente.Telefono is not null)
         {
-            cliente.Telefono = dto.Telefono.Trim();
+            existing.Telefono = cliente.Telefono.Trim();
         }
 
-        if (dto.Correo is not null)
+        if (cliente.Correo is not null)
         {
-            cliente.Correo = dto.Correo.Trim();
+            existing.Correo = cliente.Correo.Trim();
         }
 
-        if (dto.Activo.HasValue)
+        if (cliente.Activo.HasValue)
         {
-            cliente.Activo = dto.Activo.Value;
+            existing.Activo = cliente.Activo.Value;
         }
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return MapToDto(cliente);
+        return existing;
     }
 
     public async Task<bool> DesactivarAsync(Guid id, CancellationToken cancellationToken)
@@ -132,9 +116,9 @@ public class ClienteRepository : IClienteRepository
         return true;
     }
 
-    private static void ValidarDatosCreacion(CreateClienteDto dto)
+    private static void ValidarDatosCreacion(Cliente cliente)
     {
-        if (string.IsNullOrWhiteSpace(dto.Nombres))
+        if (string.IsNullOrWhiteSpace(cliente.Nombres))
         {
             throw new ArgumentException("Los nombres son requeridos.");
         }
@@ -157,19 +141,5 @@ public class ClienteRepository : IClienteRepository
         {
             throw new ArgumentException("Ya existe un cliente con ese DNI.");
         }
-    }
-
-    private static ClienteResponseDto MapToDto(Cliente cliente)
-    {
-        return new ClienteResponseDto
-        {
-            Id = cliente.Id,
-            Dni = cliente.Dni,
-            Nombres = cliente.Nombres,
-            Apellidos = cliente.Apellidos,
-            Telefono = cliente.Telefono,
-            Correo = cliente.Correo,
-            Activo = cliente.Activo
-        };
     }
 }

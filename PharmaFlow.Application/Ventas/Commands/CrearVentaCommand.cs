@@ -1,6 +1,6 @@
-using PharmaFlow.Application.Features.Ventas.DTOs;
+using PharmaFlow.Application.Ventas.DTOs;
 
-namespace PharmaFlow.Application.Features.Ventas.Commands;
+namespace PharmaFlow.Application.Ventas.Commands;
 
 public class CrearVentaCommand
 {

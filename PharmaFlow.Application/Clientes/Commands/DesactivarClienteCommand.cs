@@ -1,4 +1,4 @@
-namespace PharmaFlow.Application.Features.Clientes.Commands;
+namespace PharmaFlow.Application.Clientes.Commands;
 
 public class DesactivarClienteCommand
 {

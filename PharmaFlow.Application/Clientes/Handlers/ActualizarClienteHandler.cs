@@ -1,7 +1,8 @@
-using PharmaFlow.Application.Features.Clientes.Commands;
-using PharmaFlow.Application.Features.Clientes.DTOs;
+using PharmaFlow.Application.Clientes.Commands;
+using PharmaFlow.Application.Clientes.DTOs;
+using PharmaFlow.Persistence;
 
-namespace PharmaFlow.Application.Features.Clientes.Handlers;
+namespace PharmaFlow.Application.Clientes.Handlers;
 
 public class ActualizarClienteHandler
 {
@@ -12,8 +13,35 @@ public class ActualizarClienteHandler
         this.clienteRepository = clienteRepository;
     }
 
-    public Task<ClienteResponseDto?> Handle(ActualizarClienteCommand command, CancellationToken cancellationToken)
+    public async Task<ClienteResponseDto?> Handle(ActualizarClienteCommand command, CancellationToken cancellationToken)
     {
-        return clienteRepository.ActualizarAsync(command.Id, command.Datos, cancellationToken);
+        var cliente = new Cliente
+        {
+            Id = command.Id,
+            Dni = command.Datos.Dni,
+            Nombres = command.Datos.Nombres,
+            Apellidos = command.Datos.Apellidos,
+            Telefono = command.Datos.Telefono,
+            Correo = command.Datos.Correo,
+            Activo = command.Datos.Activo
+        };
+
+        var resultado = await clienteRepository.ActualizarAsync(cliente, cancellationToken);
+
+        if (resultado is null)
+        {
+            return null;
+        }
+
+        return new ClienteResponseDto
+        {
+            Id = resultado.Id,
+            Dni = resultado.Dni,
+            Nombres = resultado.Nombres,
+            Apellidos = resultado.Apellidos,
+            Telefono = resultado.Telefono,
+            Correo = resultado.Correo,
+            Activo = resultado.Activo
+        };
     }
 }

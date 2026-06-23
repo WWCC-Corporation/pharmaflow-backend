@@ -1,6 +1,6 @@
-using PharmaFlow.Application.Features.Clientes.Commands;
+using PharmaFlow.Application.Clientes.Commands;
 
-namespace PharmaFlow.Application.Features.Clientes.Handlers;
+namespace PharmaFlow.Application.Clientes.Handlers;
 
 public class DesactivarClienteHandler
 {

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using PharmaFlow.Application.Features.Ventas.Commands;
-using PharmaFlow.Application.Features.Ventas.DTOs;
-using PharmaFlow.Application.Features.Ventas.Handlers;
-using PharmaFlow.Application.Features.Ventas.Queries;
+using PharmaFlow.Application.Ventas.Commands;
+using PharmaFlow.Application.Ventas.DTOs;
+using PharmaFlow.Application.Ventas.Handlers;
+using PharmaFlow.Application.Ventas.Queries;
 
 namespace PharmaFlow.Persistence.Controllers.Ventas;
 

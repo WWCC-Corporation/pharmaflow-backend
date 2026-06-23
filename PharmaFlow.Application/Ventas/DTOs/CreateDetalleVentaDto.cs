@@ -1,4 +1,4 @@
-namespace PharmaFlow.Application.Features.Ventas.DTOs;
+namespace PharmaFlow.Application.Ventas.DTOs;
 
 public class CreateDetalleVentaDto
 {

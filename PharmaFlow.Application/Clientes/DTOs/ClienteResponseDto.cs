@@ -1,4 +1,4 @@
-namespace PharmaFlow.Application.Features.Clientes.DTOs;
+namespace PharmaFlow.Application.Clientes.DTOs;
 
 public class ClienteResponseDto
 {
