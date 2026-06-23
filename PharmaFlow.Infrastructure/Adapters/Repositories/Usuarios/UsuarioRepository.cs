@@ -6,4 +6,9 @@ public class UsuarioRepository
     {
         return null;
     }
+
+    public List<object> GetAll()
+    {
+        return new List<object>();
+    }
 }
