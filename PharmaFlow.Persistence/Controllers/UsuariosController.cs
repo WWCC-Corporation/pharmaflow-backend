@@ -6,4 +6,9 @@ namespace PharmaFlow.Persistence.Controllers;
 [Route("api/usuarios")]
 public class UsuariosController : ControllerBase
 {
+    [HttpGet]
+    public IActionResult Listar()
+    {
+        return Ok();
+    }
 }
