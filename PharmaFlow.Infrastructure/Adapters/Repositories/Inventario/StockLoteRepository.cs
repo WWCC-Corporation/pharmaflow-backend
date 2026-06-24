@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +23,14 @@ public class StockLoteRepository : IStockLoteRepository
             .FirstOrDefaultAsync(x => x.IdSucursal == idSucursal && x.IdLote == idLote, cancellationToken);
     }
 
+    public Task AgregarAsync(StockLote stockLote, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task ActualizarAsync(StockLote stockLote, CancellationToken cancellationToken = default)
     {
         _dbContext.StockLotes.Update(stockLote);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
-}*/
+}
