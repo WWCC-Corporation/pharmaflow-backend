@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PharmaFlow.Application.Features.Compras.Interfaces;
 using PharmaFlow.Application.Features.Compras.Services;
-using PharmaFlow.Application.Features.Caja.Interfaces;
-using PharmaFlow.Application.Features.Caja.Services;
+using PharmaFlow.Application.Caja.Handlers;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Caja;
 using PharmaFlow.Application.Features.Reportes.Handlers;
 using PharmaFlow.Application.Interfaces;
 using PharmaFlow.Domain.Ports;
@@ -60,9 +60,13 @@ builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
 builder.Services.AddScoped<ICompraRepository, CompraRepository>();
 
 // ===============================
-// CAMBIO KEVIN: Inyección de dependencias del módulo Caja
+// CAMBIO KEVIN: Inyección de dependencias del módulo Caja (Handlers y Adapter)
 // ===============================
-builder.Services.AddScoped<ICajaService, CajaService>();
+builder.Services.AddScoped<AbrirCajaHandler>();
+builder.Services.AddScoped<CerrarCajaHandler>();
+builder.Services.AddScoped<RegistrarMovimientoCajaHandler>();
+builder.Services.AddScoped<ObtenerTurnoCajaActualHandler>();
+builder.Services.AddScoped<ObtenerResumenCajaHandler>();
 builder.Services.AddScoped<ICajaRepository, CajaRepository>();
 
 var app = builder.Build();

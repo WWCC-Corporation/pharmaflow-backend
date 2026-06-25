@@ -1,73 +1,121 @@
 using Microsoft.AspNetCore.Mvc;
-using PharmaFlow.Application.Features.Caja.DTOs;
-using PharmaFlow.Application.Features.Caja.Interfaces;
-using System;
-using System.Threading.Tasks;
+using PharmaFlow.Application.Caja.Commands;
+using PharmaFlow.Application.Caja.Handlers;
+using PharmaFlow.Application.Caja.Queries;
 
-namespace PharmaFlow.Persistence.Controllers.Caja
+namespace PharmaFlow.Persistence.Controllers.Caja;
+
+[ApiController]
+[Route("api/[controller]")]
+public class CajaController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class CajaController : ControllerBase
+    private readonly AbrirCajaHandler _abrirCajaHandler;
+    private readonly CerrarCajaHandler _cerrarCajaHandler;
+    private readonly RegistrarMovimientoCajaHandler _registrarMovimientoCajaHandler;
+    private readonly ObtenerTurnoCajaActualHandler _obtenerTurnoCajaActualHandler;
+    private readonly ObtenerResumenCajaHandler _obtenerResumenCajaHandler;
+
+    public CajaController(
+        AbrirCajaHandler abrirCajaHandler,
+        CerrarCajaHandler cerrarCajaHandler,
+        RegistrarMovimientoCajaHandler registrarMovimientoCajaHandler,
+        ObtenerTurnoCajaActualHandler obtenerTurnoCajaActualHandler,
+        ObtenerResumenCajaHandler obtenerResumenCajaHandler)
     {
-        private readonly ICajaService _cajaService;
+        _abrirCajaHandler = abrirCajaHandler;
+        _cerrarCajaHandler = cerrarCajaHandler;
+        _registrarMovimientoCajaHandler = registrarMovimientoCajaHandler;
+        _obtenerTurnoCajaActualHandler = obtenerTurnoCajaActualHandler;
+        _obtenerResumenCajaHandler = obtenerResumenCajaHandler;
+    }
 
-        public CajaController(ICajaService cajaService)
+    [HttpPost("abrir")]
+    public async Task<IActionResult> AbrirCaja([FromBody] AbrirCajaCommand command)
+    {
+        try
         {
-            _cajaService = cajaService;
-        }
-
-        [HttpPost("abrir")]
-        public async Task<IActionResult> AbrirCaja([FromBody] AperturaCajaDto dto)
-        {
-            try
-            {
-                var result = await _cajaService.AbrirCajaAsync(dto);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
-        }
-
-        [HttpPost("cerrar")]
-        public async Task<IActionResult> CerrarCaja([FromBody] CierreCajaDto dto)
-        {
-            try
-            {
-                var result = await _cajaService.CerrarCajaAsync(dto);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
-        }
-
-        [HttpPost("movimiento")]
-        public async Task<IActionResult> RegistrarMovimiento([FromBody] RegistrarMovimientoDto dto)
-        {
-            try
-            {
-                await _cajaService.RegistrarMovimientoAsync(dto);
-                return Ok(new { Message = "Movimiento registrado exitosamente." });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
-        }
-
-        [HttpGet("estado/{idUsuario}")]
-        public async Task<IActionResult> ObtenerEstadoCaja(Guid idUsuario)
-        {
-            var result = await _cajaService.ObtenerEstadoCajaAsync(idUsuario);
-            if (result == null)
-            {
-                return NotFound(new { Message = "El usuario no tiene una caja abierta." });
-            }
+            var result = await _abrirCajaHandler.Handle(command);
             return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPost("cerrar")]
+    public async Task<IActionResult> CerrarCaja([FromBody] CerrarCajaCommand command)
+    {
+        try
+        {
+            var result = await _cerrarCajaHandler.Handle(command);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPost("movimiento")]
+    public async Task<IActionResult> RegistrarMovimiento([FromBody] RegistrarMovimientoCajaCommand command)
+    {
+        try
+        {
+            var result = await _registrarMovimientoCajaHandler.Handle(command);
+            return Ok(result);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { Message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    [HttpGet("estado/{idUsuario}")]
+    public async Task<IActionResult> ObtenerEstadoCaja(Guid idUsuario)
+    {
+        var query = new ObtenerTurnoCajaActualQuery { IdUsuario = idUsuario };
+        var result = await _obtenerTurnoCajaActualHandler.Handle(query);
+        
+        if (result == null)
+        {
+            return NotFound(new { Message = "El usuario no tiene una caja abierta." });
+        }
+        return Ok(result);
+    }
+
+    [HttpGet("resumen/{idTurnoCaja}")]
+    public async Task<IActionResult> ObtenerResumenCaja(Guid idTurnoCaja)
+    {
+        try
+        {
+            var query = new ObtenerResumenCajaQuery { IdTurnoCaja = idTurnoCaja };
+            var result = await _obtenerResumenCajaHandler.Handle(query);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { Message = ex.Message });
         }
     }
 }
