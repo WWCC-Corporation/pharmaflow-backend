@@ -22,12 +22,13 @@ public class ReporteVentasReader : IReporteVentasReader
 
         if (query.Desde.HasValue)
         {
-            ventasBase = ventasBase.Where(venta => venta.Fecha >= query.Desde.Value.Date);
+            var desde = ToUtcDate(query.Desde.Value);
+            ventasBase = ventasBase.Where(venta => venta.Fecha >= desde);
         }
 
         if (query.Hasta.HasValue)
         {
-            var hastaExclusivo = query.Hasta.Value.Date.AddDays(1);
+            var hastaExclusivo = ToUtcDate(query.Hasta.Value).AddDays(1);
             ventasBase = ventasBase.Where(venta => venta.Fecha < hastaExclusivo);
         }
 
@@ -65,5 +66,10 @@ public class ReporteVentasReader : IReporteVentasReader
             VentasAnuladas = ventasAnuladas,
             VentasPorDia = ventasPorDia
         };
+    }
+
+    private static DateTime ToUtcDate(DateTime value)
+    {
+        return DateTime.SpecifyKind(value.Date, DateTimeKind.Utc);
     }
 }
