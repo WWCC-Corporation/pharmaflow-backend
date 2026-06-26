@@ -12,6 +12,8 @@ using PharmaFlow.Infrastructure.Adapters.Repositories.Dashboard;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Proveedores;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Reportes;
 using PharmaFlow.Infrastructure.Data;
+//
+using PharmaFlow.Infrastructure.Adapters.Repositories.Inventario;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +49,11 @@ var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>() ?? [];
 
+//agrado
+builder.Services.AddScoped<IStockLoteRepository, StockLoteRepository>();
+builder.Services.AddScoped<IMovimientoInventarioRepository, MovimientoInventarioRepository>();
+builder.Services.AddScoped<IInventarioReader, InventarioReader>();
+//
 builder.Services.AddSingleton(dataSource);
 builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
     options.UseNpgsql(dataSource, npgsqlOptions =>
