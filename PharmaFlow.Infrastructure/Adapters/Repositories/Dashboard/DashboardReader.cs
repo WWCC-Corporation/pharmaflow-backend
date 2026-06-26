@@ -20,7 +20,7 @@ public class DashboardReader : IDashboardReader
     public async Task<DashboardResumenDto> ObtenerResumenAsync(ObtenerResumenDashboardQuery query, CancellationToken cancellationToken)
     {
         var fechaConsulta = query.Fecha?.Date ?? DateTime.Today;
-        var inicioDia = fechaConsulta.Date;
+        var inicioDia = ToUtcDate(fechaConsulta);
         var finDia = inicioDia.AddDays(1);
         var fechaVencimientoInicio = DateOnly.FromDateTime(inicioDia);
         var fechaVencimientoFin = fechaVencimientoInicio.AddDays(DiasVencimiento);
@@ -123,5 +123,10 @@ public class DashboardReader : IDashboardReader
                 })
                 .ToListAsync(cancellationToken)
         };
+    }
+
+    private static DateTime ToUtcDate(DateTime value)
+    {
+        return DateTime.SpecifyKind(value.Date, DateTimeKind.Utc);
     }
 }

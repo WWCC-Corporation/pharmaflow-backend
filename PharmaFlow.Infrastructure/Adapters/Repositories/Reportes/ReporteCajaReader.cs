@@ -42,12 +42,13 @@ public class ReporteCajaReader : IReporteCajaReader
 
         if (query.Desde.HasValue)
         {
-            movimientos = movimientos.Where(movimiento => movimiento.CreatedAt >= query.Desde.Value.Date);
+            var desde = ToUtcDate(query.Desde.Value);
+            movimientos = movimientos.Where(movimiento => movimiento.CreatedAt >= desde);
         }
 
         if (query.Hasta.HasValue)
         {
-            var hastaExclusivo = query.Hasta.Value.Date.AddDays(1);
+            var hastaExclusivo = ToUtcDate(query.Hasta.Value).AddDays(1);
             movimientos = movimientos.Where(movimiento => movimiento.CreatedAt < hastaExclusivo);
         }
 
@@ -95,5 +96,10 @@ public class ReporteCajaReader : IReporteCajaReader
                 })
                 .ToList()
         };
+    }
+
+    private static DateTime ToUtcDate(DateTime value)
+    {
+        return DateTime.SpecifyKind(value.Date, DateTimeKind.Utc);
     }
 }

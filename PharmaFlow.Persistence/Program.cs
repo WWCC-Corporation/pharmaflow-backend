@@ -49,7 +49,11 @@ var allowedOrigins = builder.Configuration
 
 builder.Services.AddSingleton(dataSource);
 builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
-    options.UseNpgsql(dataSource));
+    options.UseNpgsql(dataSource, npgsqlOptions =>
+    {
+        npgsqlOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null);
+        npgsqlOptions.CommandTimeout(120);
+    }));
 builder.Services.AddScoped<IDashboardReader, DashboardReader>();
 builder.Services.AddScoped<ObtenerResumenDashboardHandler>();
 builder.Services.AddScoped<IReporteVentasReader, ReporteVentasReader>();
