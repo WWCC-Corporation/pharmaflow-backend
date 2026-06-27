@@ -1,21 +1,25 @@
 using Microsoft.EntityFrameworkCore;
-using PharmaFlow.Application.Features.Compras.Interfaces;
-using PharmaFlow.Application.Features.Compras.Services;
+using Npgsql;
+using Npgsql.NameTranslation;
 using PharmaFlow.Application.Caja.Handlers;
-using PharmaFlow.Infrastructure.Adapters.Repositories.Caja;
-using PharmaFlow.Application.Features.Reportes.Handlers;
-using PharmaFlow.Application.Interfaces;
+using PharmaFlow.Application.Compras.Handlers;
+using PharmaFlow.Application.Dashboard.Handlers;
+using PharmaFlow.Application.Proveedores.Handlers;
+using PharmaFlow.Application.Reportes.Handlers;
+using PharmaFlow.Domain.Enums;
 using PharmaFlow.Domain.Ports;
+using PharmaFlow.Domain.Ports.Repositories;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Caja;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Compras;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Dashboard;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Proveedores;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Reportes;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Inventario;
 using PharmaFlow.Infrastructure.Context;
-using PharmaFlow.Infrastructure.Repositories;
-using PharmaFlow.Infrastructure.Repositories.Compras;
-using PharmaFlow.Persistence.Middlewares;
+using PharmaFlow.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cargar variables de entorno desde el archivo .env.
-// Se intenta cargar desde la raíz del proyecto o desde la carpeta anterior,
-// dependiendo de cómo se ejecute la API.
 var envPathRoot = Path.Combine(Directory.GetCurrentDirectory(), ".env");
 var envPathParent = Path.Combine(Directory.GetCurrentDirectory(), "..", ".env");
 
@@ -30,34 +34,76 @@ else if (File.Exists(envPathParent))
 
 builder.Configuration.AddEnvironmentVariables();
 
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("No se encontro la cadena de conexion 'ConnectionStrings__DefaultConnection'.");
+
+var enumNameTranslator = new NpgsqlNullNameTranslator();
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<EstadoCompra>("estado_compra", enumNameTranslator);
+dataSourceBuilder.MapEnum<EstadoVenta>("estado_venta", enumNameTranslator);
+dataSourceBuilder.MapEnum<MetodoPago>("metodo_pago", enumNameTranslator);
+dataSourceBuilder.MapEnum<Moneda>("moneda", enumNameTranslator);
+dataSourceBuilder.MapEnum<TipoAlerta>("tipo_alerta", enumNameTranslator);
+dataSourceBuilder.MapEnum<TipoMovimiento>("tipo_movimiento", enumNameTranslator);
+dataSourceBuilder.MapEnum<TipoMovimientoCaja>("tipo_movimiento_caja", enumNameTranslator);
+var dataSource = dataSourceBuilder.Build();
+
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
+//agrado
+builder.Services.AddScoped<IStockLoteRepository, StockLoteRepository>();
+builder.Services.AddScoped<IMovimientoInventarioRepository, MovimientoInventarioRepository>();
+builder.Services.AddScoped<IInventarioReader, InventarioReader>();
+//
+builder.Services.AddSingleton(dataSource);
+builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
+    options.UseNpgsql(dataSource, npgsqlOptions =>
+    {
+        npgsqlOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null);
+        npgsqlOptions.CommandTimeout(120);
+    }));
+builder.Services.AddScoped<IDashboardReader, DashboardReader>();
+builder.Services.AddScoped<ObtenerResumenDashboardHandler>();
+builder.Services.AddScoped<IReporteVentasReader, ReporteVentasReader>();
+builder.Services.AddScoped<ObtenerResumenVentasHandler>();
+builder.Services.AddScoped<IReporteInventarioReader, ReporteInventarioReader>();
+builder.Services.AddScoped<ObtenerResumenInventarioHandler>();
+builder.Services.AddScoped<IReporteCajaReader, ReporteCajaReader>();
+builder.Services.AddScoped<ObtenerResumenCajaHandler>();
+builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
+builder.Services.AddScoped<RegistrarProveedorHandler>();
+builder.Services.AddScoped<ActualizarProveedorHandler>();
+builder.Services.AddScoped<DesactivarProveedorHandler>();
+builder.Services.AddScoped<ListarProveedoresHandler>();
+builder.Services.AddScoped<ObtenerProveedorPorIdHandler>();
+builder.Services.AddScoped<ICompraRepository, CompraRepository>();
+builder.Services.AddScoped<RegistrarCompraHandler>();
+builder.Services.AddScoped<ListarComprasHandler>();
+builder.Services.AddScoped<ObtenerCompraPorIdHandler>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// 1. Registrar Base de Datos
-// Se mantiene la configuración base actualizada por Diego.
-builder.Services.AddDbContext<PharmaFlowDbContext>();
-
-// 2. Registrar Unit of Work y Repositorios generales
-// Configuración base de arquitectura agregada por Diego.
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-// 3. Registrar Handlers y Servicios de reportes
-// Configuración base de reportes agregada por Diego.
-builder.Services.AddScoped<ObtenerReporteVentasHandler>();
-
-// ===============================
-// CAMBIO ALEXANDRO: Inyección de dependencias del módulo Abastecimiento / Compras
-// Aquí se conectan las interfaces de Application con sus implementaciones.
-// Esto respeta la arquitectura hexagonal y separación de responsabilidades.
-// ===============================
-builder.Services.AddScoped<IProveedorService, ProveedorService>();
-builder.Services.AddScoped<ICompraService, CompraService>();
-
-builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
-builder.Services.AddScoped<ICompraRepository, CompraRepository>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DefaultCors", policy =>
+    {
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+        else
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+    });
+});
 
 // ===============================
 // CAMBIO KEVIN: Inyección de dependencias del módulo Caja (Handlers y Adapter)
@@ -71,10 +117,6 @@ builder.Services.AddScoped<ICajaRepository, CajaRepository>();
 
 var app = builder.Build();
 
-// Configurar el Middleware Global de Excepciones ANTES de cualquier otra cosa.
-app.UseMiddleware<GlobalExceptionMiddleware>();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -83,14 +125,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("DefaultCors");
+
 app.UseAuthorization();
 
-// ===============================
-// CAMBIO ALEXANDRO: Mapeo de Controllers
-// Permite que la API reconozca rutas como:
-// GET /api/proveedores
-// POST /api/compras
-// ===============================
 app.MapControllers();
 
 app.Run();
