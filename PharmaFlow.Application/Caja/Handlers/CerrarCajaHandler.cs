@@ -3,7 +3,7 @@ using PharmaFlow.Application.Caja.DTOs;
 using PharmaFlow.Application.Caja.Mappings;
 using PharmaFlow.Application.Caja.Validators;
 using PharmaFlow.Domain.Enums;
-using PharmaFlow.Domain.Ports;
+using PharmaFlow.Domain.Ports.Repositories;
 
 namespace PharmaFlow.Application.Caja.Handlers;
 
@@ -43,7 +43,7 @@ public class CerrarCajaHandler
             command.IdTurnoCaja, TipoMovimientoCaja.VUELTO_SALIDA);
 
         // Monto esperado = Apertura + Ventas Efectivo + Ingresos Manuales - Egresos Manuales - Vueltos
-        var montoEsperado = (turno.MontoApertura ?? 0)
+        var montoEsperado = turno.MontoApertura
             + totalVentasEfectivo
             + totalIngresosManuales
             - totalEgresosManuales

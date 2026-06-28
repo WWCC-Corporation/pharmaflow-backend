@@ -2,7 +2,7 @@ using PharmaFlow.Application.Caja.DTOs;
 using PharmaFlow.Application.Caja.Mappings;
 using PharmaFlow.Application.Caja.Queries;
 using PharmaFlow.Domain.Enums;
-using PharmaFlow.Domain.Ports;
+using PharmaFlow.Domain.Ports.Repositories;
 
 namespace PharmaFlow.Application.Caja.Handlers;
 
@@ -25,16 +25,16 @@ public class ObtenerTurnoCajaActualHandler
     }
 }
 
-public class ObtenerResumenCajaHandler
+public class ObtenerDetalleTurnoCajaHandler
 {
     private readonly ICajaRepository _cajaRepository;
 
-    public ObtenerResumenCajaHandler(ICajaRepository cajaRepository)
+    public ObtenerDetalleTurnoCajaHandler(ICajaRepository cajaRepository)
     {
         _cajaRepository = cajaRepository;
     }
 
-    public async Task<ResumenCajaDto> Handle(ObtenerResumenCajaQuery query)
+    public async Task<ResumenCajaDto> Handle(ObtenerDetalleTurnoCajaQuery query)
     {
         var turno = await _cajaRepository.GetTurnoPorIdAsync(query.IdTurnoCaja)
             ?? throw new KeyNotFoundException("El turno de caja no existe.");
@@ -53,7 +53,7 @@ public class ObtenerResumenCajaHandler
             .Where(m => m.Tipo == TipoMovimientoCaja.EGRESO_MANUAL)
             .Sum(m => m.Monto);
 
-        var montoEsperado = (turno.MontoApertura ?? 0)
+        var montoEsperado = turno.MontoApertura
             + totalVentasEfectivo
             + totalIngresosManuales
             - totalEgresosManuales;

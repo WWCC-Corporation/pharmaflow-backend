@@ -15,7 +15,6 @@ using PharmaFlow.Infrastructure.Adapters.Repositories.Dashboard;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Proveedores;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Reportes;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Inventario;
-using PharmaFlow.Infrastructure.Context;
 using PharmaFlow.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -112,7 +111,7 @@ builder.Services.AddScoped<AbrirCajaHandler>();
 builder.Services.AddScoped<CerrarCajaHandler>();
 builder.Services.AddScoped<RegistrarMovimientoCajaHandler>();
 builder.Services.AddScoped<ObtenerTurnoCajaActualHandler>();
-builder.Services.AddScoped<ObtenerResumenCajaHandler>();
+builder.Services.AddScoped<ObtenerDetalleTurnoCajaHandler>();
 builder.Services.AddScoped<ICajaRepository, CajaRepository>();
 
 var app = builder.Build();

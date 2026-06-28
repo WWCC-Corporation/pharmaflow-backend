@@ -1,6 +1,6 @@
 namespace PharmaFlow.Application.Caja.Queries;
 
-public class ObtenerResumenCajaQuery
+public class ObtenerDetalleTurnoCajaQuery
 {
     public Guid IdTurnoCaja { get; set; }
 }

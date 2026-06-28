@@ -13,20 +13,20 @@ public class CajaController : ControllerBase
     private readonly CerrarCajaHandler _cerrarCajaHandler;
     private readonly RegistrarMovimientoCajaHandler _registrarMovimientoCajaHandler;
     private readonly ObtenerTurnoCajaActualHandler _obtenerTurnoCajaActualHandler;
-    private readonly ObtenerResumenCajaHandler _obtenerResumenCajaHandler;
+    private readonly ObtenerDetalleTurnoCajaHandler _obtenerDetalleTurnoCajaHandler;
 
     public CajaController(
         AbrirCajaHandler abrirCajaHandler,
         CerrarCajaHandler cerrarCajaHandler,
         RegistrarMovimientoCajaHandler registrarMovimientoCajaHandler,
         ObtenerTurnoCajaActualHandler obtenerTurnoCajaActualHandler,
-        ObtenerResumenCajaHandler obtenerResumenCajaHandler)
+        ObtenerDetalleTurnoCajaHandler obtenerDetalleTurnoCajaHandler)
     {
         _abrirCajaHandler = abrirCajaHandler;
         _cerrarCajaHandler = cerrarCajaHandler;
         _registrarMovimientoCajaHandler = registrarMovimientoCajaHandler;
         _obtenerTurnoCajaActualHandler = obtenerTurnoCajaActualHandler;
-        _obtenerResumenCajaHandler = obtenerResumenCajaHandler;
+        _obtenerDetalleTurnoCajaHandler = obtenerDetalleTurnoCajaHandler;
     }
 
     [HttpPost("abrir")]
@@ -109,8 +109,8 @@ public class CajaController : ControllerBase
     {
         try
         {
-            var query = new ObtenerResumenCajaQuery { IdTurnoCaja = idTurnoCaja };
-            var result = await _obtenerResumenCajaHandler.Handle(query);
+            var query = new ObtenerDetalleTurnoCajaQuery { IdTurnoCaja = idTurnoCaja };
+            var result = await _obtenerDetalleTurnoCajaHandler.Handle(query);
             return Ok(result);
         }
         catch (KeyNotFoundException ex)

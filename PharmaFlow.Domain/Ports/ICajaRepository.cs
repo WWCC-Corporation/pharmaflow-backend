@@ -1,7 +1,7 @@
+using PharmaFlow.Domain.Entities;
 using PharmaFlow.Domain.Enums;
-using PharmaFlow.Persistence;
 
-namespace PharmaFlow.Domain.Ports;
+namespace PharmaFlow.Domain.Ports.Repositories;
 
 public interface ICajaRepository
 {

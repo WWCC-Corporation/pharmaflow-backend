@@ -1,5 +1,5 @@
 using PharmaFlow.Application.Caja.DTOs;
-using PharmaFlow.Persistence;
+using PharmaFlow.Domain.Entities;
 
 namespace PharmaFlow.Application.Caja.Mappings;
 

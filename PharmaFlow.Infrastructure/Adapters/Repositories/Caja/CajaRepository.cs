@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using PharmaFlow.Domain.Entities;
 using PharmaFlow.Domain.Enums;
-using PharmaFlow.Domain.Ports;
-using PharmaFlow.Infrastructure.Context;
-using PharmaFlow.Persistence;
+using PharmaFlow.Domain.Ports.Repositories;
+using PharmaFlow.Infrastructure.Data;
 
 namespace PharmaFlow.Infrastructure.Adapters.Repositories.Caja;
 

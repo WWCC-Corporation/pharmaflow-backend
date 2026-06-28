@@ -1,9 +1,9 @@
 using PharmaFlow.Application.Caja.Commands;
 using PharmaFlow.Application.Caja.DTOs;
 using PharmaFlow.Application.Caja.Mappings;
+using PharmaFlow.Domain.Entities;
 using PharmaFlow.Domain.Enums;
-using PharmaFlow.Domain.Ports;
-using PharmaFlow.Persistence;
+using PharmaFlow.Domain.Ports.Repositories;
 
 namespace PharmaFlow.Application.Caja.Handlers;
 
