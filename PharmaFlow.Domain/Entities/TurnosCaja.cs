@@ -1,27 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PharmaFlow.Persistence;
+namespace PharmaFlow.Domain.Entities;
 
 public partial class TurnosCaja
 {
     public Guid Id { get; set; }
 
+    public Guid IdSucursal { get; set; }
+
     public Guid? IdUsuario { get; set; }
 
-    public decimal? MontoApertura { get; set; }
+    public decimal MontoApertura { get; set; }
 
-    public decimal? MontoVentas { get; set; }
+    public decimal MontoVentas { get; set; }
 
     public decimal? MontoContado { get; set; }
 
     public decimal? DiferenciaCaja { get; set; }
 
-    public bool? Abierto { get; set; }
+    public bool Abierto { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public DateTime? ClosedAt { get; set; }
+
+    public virtual Sucursale IdSucursalNavigation { get; set; } = null!;
 
     public virtual Usuario? IdUsuarioNavigation { get; set; }
 

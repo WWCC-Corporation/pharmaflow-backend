@@ -1,16 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using PharmaFlow.Persistence;
+using PharmaFlow.Domain.Entities;
 
-namespace PharmaFlow.Infrastructure.Context;
+namespace PharmaFlow.Infrastructure.Data;
 
 public partial class PharmaFlowDbContext : DbContext
 {
-    public PharmaFlowDbContext()
-    {
-    }
-
     public PharmaFlowDbContext(DbContextOptions<PharmaFlowDbContext> options)
         : base(options)
     {
@@ -48,19 +44,19 @@ public partial class PharmaFlowDbContext : DbContext
 
     public virtual DbSet<StockLote> StockLotes { get; set; }
 
+    public virtual DbSet<Sucursale> Sucursales { get; set; }
+
     public virtual DbSet<TurnosCaja> TurnosCajas { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
+
+    public virtual DbSet<UsuarioSucursale> UsuarioSucursales { get; set; }
 
     public virtual DbSet<VStockFefo> VStockFefos { get; set; }
 
     public virtual DbSet<VStockPorProducto> VStockPorProductos { get; set; }
 
     public virtual DbSet<Venta> Ventas { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=ep-solitary-sunset-ap4tfcea-pooler.c-7.us-east-1.aws.neon.tech;Port=5432;Database=neondb;Username=neondb_owner;Password=npg_07ruqtJRPamb;SSL Mode=Require;Trust Server Certificate=true;Pooling=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,19 +77,24 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.ToTable("alertas");
 
+            entity.HasIndex(e => new { e.IdSucursal, e.Leida, e.CreatedAt }, "idx_alertas_sucursal_leida").IsDescending(false, false, true);
+
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnName("created_at");
-            entity.Property(e => e.Tipo).HasColumnName("tipo");
             entity.Property(e => e.IdLote).HasColumnName("id_lote");
             entity.Property(e => e.IdProducto).HasColumnName("id_producto");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.Leida)
                 .HasDefaultValue(false)
                 .HasColumnName("leida");
             entity.Property(e => e.Mensaje).HasColumnName("mensaje");
+            entity.Property(e => e.Tipo)
+                .HasColumnType("tipo_alerta")
+                .HasColumnName("tipo");
 
             entity.HasOne(d => d.IdLoteNavigation).WithMany(p => p.Alerta)
                 .HasForeignKey(d => d.IdLote)
@@ -102,6 +103,11 @@ public partial class PharmaFlowDbContext : DbContext
             entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.Alerta)
                 .HasForeignKey(d => d.IdProducto)
                 .HasConstraintName("alertas_id_producto_fkey");
+
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.Alerta)
+                .HasForeignKey(d => d.IdSucursal)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("alertas_id_sucursal_fkey");
         });
 
         modelBuilder.Entity<AuditLog>(entity =>
@@ -120,9 +126,18 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.Detalle)
                 .HasColumnType("jsonb")
                 .HasColumnName("detalle");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.RegistroId).HasColumnName("registro_id");
             entity.Property(e => e.Tabla).HasColumnName("tabla");
             entity.Property(e => e.UsuarioId).HasColumnName("usuario_id");
+
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.AuditLogs)
+                .HasForeignKey(d => d.IdSucursal)
+                .HasConstraintName("audit_log_id_sucursal_fkey");
+
+            entity.HasOne(d => d.Usuario).WithMany(p => p.AuditLogs)
+                .HasForeignKey(d => d.UsuarioId)
+                .HasConstraintName("audit_log_usuario_id_fkey");
         });
 
         modelBuilder.Entity<Cliente>(entity =>
@@ -154,7 +169,7 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.ToTable("compras");
 
-            entity.HasIndex(e => e.Fecha, "idx_compras_fecha");
+            entity.HasIndex(e => new { e.IdSucursal, e.Fecha }, "idx_compras_sucursal_fecha");
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("gen_random_uuid()")
@@ -162,10 +177,15 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.Fecha)
                 .HasDefaultValueSql("now()")
                 .HasColumnName("fecha");
-            entity.Property(e => e.Estado).HasColumnName("estado");
-            entity.Property(e => e.Moneda).HasColumnName("moneda");
+            entity.Property(e => e.Estado)
+                .HasColumnType("estado_compra")
+                .HasColumnName("estado");
             entity.Property(e => e.IdProveedor).HasColumnName("id_proveedor");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
+            entity.Property(e => e.Moneda)
+                .HasColumnType("moneda")
+                .HasColumnName("moneda");
             entity.Property(e => e.TipoCambio)
                 .HasPrecision(10, 3)
                 .HasDefaultValueSql("1")
@@ -174,6 +194,11 @@ public partial class PharmaFlowDbContext : DbContext
             entity.HasOne(d => d.IdProveedorNavigation).WithMany(p => p.Compras)
                 .HasForeignKey(d => d.IdProveedor)
                 .HasConstraintName("compras_id_proveedor_fkey");
+
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.Compras)
+                .HasForeignKey(d => d.IdSucursal)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("compras_id_sucursal_fkey");
 
             entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.Compras)
                 .HasForeignKey(d => d.IdUsuario)
@@ -198,11 +223,11 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.HasOne(d => d.IdCompraNavigation).WithMany(p => p.DetalleCompras)
                 .HasForeignKey(d => d.IdCompra)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("detalle_compras_id_compra_fkey");
 
             entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.DetalleCompras)
                 .HasForeignKey(d => d.IdProducto)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("detalle_compras_id_producto_fkey");
         });
 
@@ -229,11 +254,11 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.DetalleVenta)
                 .HasForeignKey(d => d.IdProducto)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("detalle_ventas_id_producto_fkey");
 
             entity.HasOne(d => d.IdVentaNavigation).WithMany(p => p.DetalleVenta)
                 .HasForeignKey(d => d.IdVenta)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("detalle_ventas_id_venta_fkey");
         });
 
@@ -249,7 +274,9 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnName("created_at");
-            entity.Property(e => e.Correo).HasColumnName("correo").HasColumnType("citext");
+            entity.Property(e => e.Correo)
+                .HasColumnType("extensions.citext")
+                .HasColumnName("correo");
             entity.Property(e => e.Exito).HasColumnName("exito");
             entity.Property(e => e.Ip).HasColumnName("ip");
         });
@@ -260,7 +287,9 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.ToTable("lotes");
 
-            entity.HasIndex(e => new { e.IdProducto, e.NumeroLote }, "lotes_id_producto_numero_lote_key").IsUnique();
+            entity.HasIndex(e => new { e.IdSucursal, e.IdProducto }, "idx_lotes_sucursal_producto");
+
+            entity.HasIndex(e => new { e.IdSucursal, e.IdProducto, e.NumeroLote }, "lotes_id_sucursal_id_producto_numero_lote_key").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("gen_random_uuid()")
@@ -271,6 +300,7 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.FechaVencimiento).HasColumnName("fecha_vencimiento");
             entity.Property(e => e.IdCompra).HasColumnName("id_compra");
             entity.Property(e => e.IdProducto).HasColumnName("id_producto");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.NumeroLote).HasColumnName("numero_lote");
 
             entity.HasOne(d => d.IdCompraNavigation).WithMany(p => p.Lotes)
@@ -279,7 +309,13 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.Lotes)
                 .HasForeignKey(d => d.IdProducto)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("lotes_id_producto_fkey");
+
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.Lotes)
+                .HasForeignKey(d => d.IdSucursal)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("lotes_id_sucursal_fkey");
         });
 
         modelBuilder.Entity<MovimientoInventario>(entity =>
@@ -288,6 +324,8 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.ToTable("movimiento_inventario");
 
+            entity.HasIndex(e => new { e.IdSucursal, e.CreatedAt }, "idx_movimiento_inventario_sucursal").IsDescending(false, true);
+
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("id");
@@ -295,12 +333,15 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnName("created_at");
-            entity.Property(e => e.Tipo).HasColumnName("tipo");
             entity.Property(e => e.IdCompra).HasColumnName("id_compra");
             entity.Property(e => e.IdDetalleVenta).HasColumnName("id_detalle_venta");
             entity.Property(e => e.IdLote).HasColumnName("id_lote");
             entity.Property(e => e.IdProducto).HasColumnName("id_producto");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.IdVenta).HasColumnName("id_venta");
+            entity.Property(e => e.Tipo)
+                .HasColumnType("tipo_movimiento")
+                .HasColumnName("tipo");
             entity.Property(e => e.UsuarioId).HasColumnName("usuario_id");
 
             entity.HasOne(d => d.IdCompraNavigation).WithMany(p => p.MovimientoInventarios)
@@ -319,6 +360,11 @@ public partial class PharmaFlowDbContext : DbContext
                 .HasForeignKey(d => d.IdProducto)
                 .HasConstraintName("movimiento_inventario_id_producto_fkey");
 
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.MovimientoInventarios)
+                .HasForeignKey(d => d.IdSucursal)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("movimiento_inventario_id_sucursal_fkey");
+
             entity.HasOne(d => d.IdVentaNavigation).WithMany(p => p.MovimientoInventarios)
                 .HasForeignKey(d => d.IdVenta)
                 .HasConstraintName("movimiento_inventario_id_venta_fkey");
@@ -334,6 +380,8 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.ToTable("movimientos_caja");
 
+            entity.HasIndex(e => new { e.IdSucursal, e.CreatedAt }, "idx_movimientos_caja_sucursal").IsDescending(false, true);
+
             entity.HasIndex(e => new { e.IdTurnoCaja, e.CreatedAt }, "idx_movimientos_caja_turno").IsDescending(false, true);
 
             entity.HasIndex(e => new { e.IdUsuario, e.CreatedAt }, "idx_movimientos_caja_usuario").IsDescending(false, true);
@@ -346,14 +394,22 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnName("created_at");
-            entity.Property(e => e.Tipo).HasColumnName("tipo");
             entity.Property(e => e.Descripcion).HasColumnName("descripcion");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.IdTurnoCaja).HasColumnName("id_turno_caja");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
             entity.Property(e => e.IdVenta).HasColumnName("id_venta");
             entity.Property(e => e.Monto)
                 .HasPrecision(12, 2)
                 .HasColumnName("monto");
+            entity.Property(e => e.Tipo)
+                .HasColumnType("tipo_movimiento_caja")
+                .HasColumnName("tipo");
+
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.MovimientosCajas)
+                .HasForeignKey(d => d.IdSucursal)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("movimientos_caja_id_sucursal_fkey");
 
             entity.HasOne(d => d.IdTurnoCajaNavigation).WithMany(p => p.MovimientosCajas)
                 .HasForeignKey(d => d.IdTurnoCaja)
@@ -374,6 +430,8 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.ToTable("precios");
 
+            entity.HasIndex(e => new { e.IdSucursal, e.IdProducto, e.Activo }, "idx_precios_sucursal_producto");
+
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("id");
@@ -381,6 +439,7 @@ public partial class PharmaFlowDbContext : DbContext
                 .HasDefaultValue(true)
                 .HasColumnName("activo");
             entity.Property(e => e.IdProducto).HasColumnName("id_producto");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.PrecioCompra)
                 .HasPrecision(12, 2)
                 .HasColumnName("precio_compra");
@@ -393,8 +452,11 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.HasOne(d => d.IdProductoNavigation).WithMany(p => p.Precios)
                 .HasForeignKey(d => d.IdProducto)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("precios_id_producto_fkey");
+
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.Precios)
+                .HasForeignKey(d => d.IdSucursal)
+                .HasConstraintName("precios_id_sucursal_fkey");
         });
 
         modelBuilder.Entity<Producto>(entity =>
@@ -509,12 +571,17 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.ToTable("stock_lotes");
 
+            entity.HasIndex(e => e.IdSucursal, "idx_stock_lotes_sucursal");
+
             entity.HasIndex(e => e.IdLote, "stock_lotes_id_lote_key").IsUnique();
+
+            entity.HasIndex(e => new { e.IdSucursal, e.IdLote }, "stock_lotes_id_sucursal_id_lote_key").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("id");
             entity.Property(e => e.IdLote).HasColumnName("id_lote");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.StockActual)
                 .HasDefaultValue(0)
                 .HasColumnName("stock_actual");
@@ -527,8 +594,42 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.HasOne(d => d.IdLoteNavigation).WithOne(p => p.StockLote)
                 .HasForeignKey<StockLote>(d => d.IdLote)
-                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("stock_lotes_id_lote_fkey");
+
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.StockLotes)
+                .HasForeignKey(d => d.IdSucursal)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("stock_lotes_id_sucursal_fkey");
+        });
+
+        modelBuilder.Entity<Sucursale>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("sucursales_pkey");
+
+            entity.ToTable("sucursales");
+
+            entity.HasIndex(e => e.Codigo, "idx_sucursales_codigo");
+
+            entity.HasIndex(e => e.Codigo, "sucursales_codigo_key").IsUnique();
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("id");
+            entity.Property(e => e.Activo)
+                .HasDefaultValue(true)
+                .HasColumnName("activo");
+            entity.Property(e => e.Codigo)
+                .HasMaxLength(30)
+                .HasColumnName("codigo");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Direccion).HasColumnName("direccion");
+            entity.Property(e => e.Nombre).HasColumnName("nombre");
+            entity.Property(e => e.Telefono).HasColumnName("telefono");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnName("updated_at");
         });
 
         modelBuilder.Entity<TurnosCaja>(entity =>
@@ -550,6 +651,7 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.DiferenciaCaja)
                 .HasPrecision(12, 2)
                 .HasColumnName("diferencia_caja");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
             entity.Property(e => e.MontoApertura)
                 .HasPrecision(12, 2)
@@ -561,6 +663,11 @@ public partial class PharmaFlowDbContext : DbContext
                 .HasPrecision(12, 2)
                 .HasColumnName("monto_ventas");
 
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.TurnosCajas)
+                .HasForeignKey(d => d.IdSucursal)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("turnos_caja_id_sucursal_fkey");
+
             entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.TurnosCajas)
                 .HasForeignKey(d => d.IdUsuario)
                 .HasConstraintName("turnos_caja_id_usuario_fkey");
@@ -571,6 +678,8 @@ public partial class PharmaFlowDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("usuarios_pkey");
 
             entity.ToTable("usuarios");
+
+            entity.HasIndex(e => e.Correo, "usuarios_correo_key").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("gen_random_uuid()")
@@ -584,7 +693,9 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("now()")
                 .HasColumnName("created_at");
-            entity.Property(e => e.Correo).HasColumnName("correo").HasColumnType("citext");
+            entity.Property(e => e.Correo)
+                .HasColumnType("extensions.citext")
+                .HasColumnName("correo");
             entity.Property(e => e.IdRol).HasColumnName("id_rol");
             entity.Property(e => e.Nombres)
                 .HasMaxLength(100)
@@ -599,6 +710,35 @@ public partial class PharmaFlowDbContext : DbContext
                 .HasConstraintName("usuarios_id_rol_fkey");
         });
 
+        modelBuilder.Entity<UsuarioSucursale>(entity =>
+        {
+            entity.HasKey(e => new { e.IdUsuario, e.IdSucursal }).HasName("usuario_sucursales_pkey");
+
+            entity.ToTable("usuario_sucursales");
+
+            entity.HasIndex(e => e.IdSucursal, "idx_usuario_sucursales_sucursal");
+
+            entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
+            entity.Property(e => e.Activo)
+                .HasDefaultValue(true)
+                .HasColumnName("activo");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Principal)
+                .HasDefaultValue(false)
+                .HasColumnName("principal");
+
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.UsuarioSucursales)
+                .HasForeignKey(d => d.IdSucursal)
+                .HasConstraintName("usuario_sucursales_id_sucursal_fkey");
+
+            entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.UsuarioSucursales)
+                .HasForeignKey(d => d.IdUsuario)
+                .HasConstraintName("usuario_sucursales_id_usuario_fkey");
+        });
+
         modelBuilder.Entity<VStockFefo>(entity =>
         {
             entity
@@ -608,9 +748,11 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.Estado).HasColumnName("estado");
             entity.Property(e => e.FechaVencimiento).HasColumnName("fecha_vencimiento");
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.Nombre).HasColumnName("nombre");
             entity.Property(e => e.NumeroLote).HasColumnName("numero_lote");
             entity.Property(e => e.StockActual).HasColumnName("stock_actual");
+            entity.Property(e => e.Sucursal).HasColumnName("sucursal");
         });
 
         modelBuilder.Entity<VStockPorProducto>(entity =>
@@ -622,9 +764,11 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.CodigoBarra).HasColumnName("codigo_barra");
             entity.Property(e => e.Estado).HasColumnName("estado");
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.Nombre).HasColumnName("nombre");
             entity.Property(e => e.StockMinimo).HasColumnName("stock_minimo");
             entity.Property(e => e.StockTotal).HasColumnName("stock_total");
+            entity.Property(e => e.Sucursal).HasColumnName("sucursal");
         });
 
         modelBuilder.Entity<Venta>(entity =>
@@ -633,7 +777,7 @@ public partial class PharmaFlowDbContext : DbContext
 
             entity.ToTable("ventas");
 
-            entity.HasIndex(e => e.Fecha, "idx_ventas_fecha");
+            entity.HasIndex(e => new { e.IdSucursal, e.Fecha }, "idx_ventas_sucursal_fecha");
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("gen_random_uuid()")
@@ -641,12 +785,19 @@ public partial class PharmaFlowDbContext : DbContext
             entity.Property(e => e.Fecha)
                 .HasDefaultValueSql("now()")
                 .HasColumnName("fecha");
-            entity.Property(e => e.Estado).HasColumnName("estado");
-            entity.Property(e => e.Moneda).HasColumnName("moneda");
-            entity.Property(e => e.Metodo).HasColumnName("metodo");
+            entity.Property(e => e.Estado)
+                .HasColumnType("estado_venta")
+                .HasColumnName("estado");
             entity.Property(e => e.IdCliente).HasColumnName("id_cliente");
+            entity.Property(e => e.IdSucursal).HasColumnName("id_sucursal");
             entity.Property(e => e.IdTurnoCaja).HasColumnName("id_turno_caja");
             entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
+            entity.Property(e => e.Metodo)
+                .HasColumnType("metodo_pago")
+                .HasColumnName("metodo");
+            entity.Property(e => e.Moneda)
+                .HasColumnType("moneda")
+                .HasColumnName("moneda");
             entity.Property(e => e.MontoRecibido)
                 .HasPrecision(12, 2)
                 .HasColumnName("monto_recibido");
@@ -664,6 +815,11 @@ public partial class PharmaFlowDbContext : DbContext
             entity.HasOne(d => d.IdClienteNavigation).WithMany(p => p.Venta)
                 .HasForeignKey(d => d.IdCliente)
                 .HasConstraintName("ventas_id_cliente_fkey");
+
+            entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.Venta)
+                .HasForeignKey(d => d.IdSucursal)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("ventas_id_sucursal_fkey");
 
             entity.HasOne(d => d.IdTurnoCajaNavigation).WithMany(p => p.Venta)
                 .HasForeignKey(d => d.IdTurnoCaja)

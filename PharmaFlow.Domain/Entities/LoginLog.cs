@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PharmaFlow.Persistence;
+namespace PharmaFlow.Domain.Entities;
 
 public partial class LoginLog
 {
@@ -13,5 +13,5 @@ public partial class LoginLog
 
     public bool? Exito { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

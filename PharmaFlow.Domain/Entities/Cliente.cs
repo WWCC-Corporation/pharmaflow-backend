@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PharmaFlow.Persistence;
+namespace PharmaFlow.Domain.Entities;
 
 public partial class Cliente
 {
@@ -17,7 +17,7 @@ public partial class Cliente
 
     public string? Correo { get; set; }
 
-    public bool? Activo { get; set; }
+    public bool Activo { get; set; }
 
     public virtual ICollection<Venta> Venta { get; set; } = new List<Venta>();
 }
