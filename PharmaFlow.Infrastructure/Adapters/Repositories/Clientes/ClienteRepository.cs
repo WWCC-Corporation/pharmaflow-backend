@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using PharmaFlow.Domain.Entities;
 using PharmaFlow.Application.Clientes.Handlers;
-using PharmaFlow.Infrastructure.Context;
-using PharmaFlow.Persistence;
+using PharmaFlow.Infrastructure.Data;
 
+    
 namespace PharmaFlow.Infrastructure.Repositories.Clientes;
 
 public class ClienteRepository : IClienteRepository
@@ -91,10 +92,10 @@ public class ClienteRepository : IClienteRepository
             existing.Correo = cliente.Correo.Trim();
         }
 
-        if (cliente.Activo.HasValue)
-        {
-            existing.Activo = cliente.Activo.Value;
-        }
+        //if (cliente.Activo.HasValue)
+        //{
+        //    existing.Activo = cliente.Activo.Value;
+        //}
 
         await context.SaveChangesAsync(cancellationToken);
 

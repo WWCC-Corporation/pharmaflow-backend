@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PharmaFlow.Application.Ventas.Handlers;
+using PharmaFlow.Domain.Entities;
 using PharmaFlow.Domain.Enums;
-using PharmaFlow.Infrastructure.Context;
-using PharmaFlow.Persistence;
+using PharmaFlow.Infrastructure.Data;
 
 namespace PharmaFlow.Infrastructure.Repositories.Ventas;
 
@@ -41,7 +41,7 @@ public class VentaRepository : IVentaRepository
         venta.Id = Guid.NewGuid();
         venta.Estado = EstadoVenta.completada;
         venta.Fecha = DateTime.UtcNow;
-        if (!venta.TipoCambio.HasValue || venta.TipoCambio == 0)
+        if (venta.TipoCambio == 0) 
         {
             venta.TipoCambio = 1;
         }
@@ -188,7 +188,7 @@ public class VentaRepository : IVentaRepository
             throw new ArgumentException("La cantidad del detalle debe ser mayor a cero.");
         }
 
-        if (!detalle.IdProducto.HasValue)
+        if (detalle.IdProducto != Guid.Empty)
         {
             throw new ArgumentException("Cada detalle debe incluir un producto.");
         }

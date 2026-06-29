@@ -1,6 +1,6 @@
 using PharmaFlow.Application.Ventas.DTOs;
 using PharmaFlow.Application.Ventas.Queries;
-using PharmaFlow.Persistence;
+using PharmaFlow.Domain.Entities;
 
 namespace PharmaFlow.Application.Ventas.Handlers;
 

@@ -1,6 +1,9 @@
-using PharmaFlow.Persistence;
-
 namespace PharmaFlow.Application.Ventas.Handlers;
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Domain.Entities;
 
 public interface IVentaRepository
 {

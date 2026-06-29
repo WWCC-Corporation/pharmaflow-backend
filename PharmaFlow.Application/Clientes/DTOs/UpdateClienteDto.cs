@@ -12,5 +12,5 @@ public class UpdateClienteDto
 
     public string? Correo { get; set; }
 
-    public bool? Activo { get; set; }
+    public bool Activo { get; set; }
 }

@@ -4,7 +4,7 @@ namespace PharmaFlow.Application.Ventas.DTOs;
 
 public class CreateVentaDto
 {
-    public Moneda? Moneda { get; set; }
+    public Moneda Moneda { get; set; }
 
     public MetodoPago? Metodo { get; set; }
 
@@ -14,7 +14,7 @@ public class CreateVentaDto
 
     public Guid? IdTurnoCaja { get; set; }
 
-    public decimal? TipoCambio { get; set; }
+    public decimal TipoCambio { get; set; }
 
     public decimal MontoTotal { get; set; }
 

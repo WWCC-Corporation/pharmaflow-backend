@@ -1,6 +1,5 @@
 using PharmaFlow.Application.Clientes.DTOs;
 using PharmaFlow.Application.Clientes.Queries;
-using PharmaFlow.Persistence;
 
 namespace PharmaFlow.Application.Clientes.Handlers;
 

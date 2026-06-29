@@ -4,7 +4,7 @@ using Npgsql.NameTranslation;
 using PharmaFlow.Domain.Enums;
 using PharmaFlow.Application.Clientes.Handlers;
 using PharmaFlow.Application.Ventas.Handlers;
-using PharmaFlow.Infrastructure.Context;
+using PharmaFlow.Infrastructure.Data;
 using PharmaFlow.Infrastructure.Repositories.Clientes;
 using PharmaFlow.Infrastructure.Repositories.Ventas;
 
