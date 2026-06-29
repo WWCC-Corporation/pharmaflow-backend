@@ -1,21 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Npgsql.NameTranslation;
-using PharmaFlow.Application.Caja.Handlers;
-using PharmaFlow.Application.Compras.Handlers;
-using PharmaFlow.Application.Dashboard.Handlers;
-using PharmaFlow.Application.Proveedores.Handlers;
-using PharmaFlow.Application.Reportes.Handlers;
 using PharmaFlow.Domain.Enums;
-using PharmaFlow.Domain.Ports;
-using PharmaFlow.Domain.Ports.Repositories;
-using PharmaFlow.Infrastructure.Adapters.Repositories.Caja;
-using PharmaFlow.Infrastructure.Adapters.Repositories.Compras;
-using PharmaFlow.Infrastructure.Adapters.Repositories.Dashboard;
-using PharmaFlow.Infrastructure.Adapters.Repositories.Proveedores;
-using PharmaFlow.Infrastructure.Adapters.Repositories.Reportes;
-using PharmaFlow.Infrastructure.Adapters.Repositories.Inventario;
+using PharmaFlow.Application.Clientes.Handlers;
+using PharmaFlow.Application.Ventas.Handlers;
 using PharmaFlow.Infrastructure.Data;
+using PharmaFlow.Infrastructure.Repositories.Clientes;
+using PharmaFlow.Infrastructure.Repositories.Ventas;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,36 +43,28 @@ var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>() ?? [];
 
-//agrado
-builder.Services.AddScoped<IStockLoteRepository, StockLoteRepository>();
-builder.Services.AddScoped<IMovimientoInventarioRepository, MovimientoInventarioRepository>();
-builder.Services.AddScoped<IInventarioReader, InventarioReader>();
-//
 builder.Services.AddSingleton(dataSource);
 builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
-    options.UseNpgsql(dataSource, npgsqlOptions =>
-    {
-        npgsqlOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(5), null);
-        npgsqlOptions.CommandTimeout(120);
-    }));
-builder.Services.AddScoped<IDashboardReader, DashboardReader>();
-builder.Services.AddScoped<ObtenerResumenDashboardHandler>();
-builder.Services.AddScoped<IReporteVentasReader, ReporteVentasReader>();
-builder.Services.AddScoped<ObtenerResumenVentasHandler>();
-builder.Services.AddScoped<IReporteInventarioReader, ReporteInventarioReader>();
-builder.Services.AddScoped<ObtenerResumenInventarioHandler>();
-builder.Services.AddScoped<IReporteCajaReader, ReporteCajaReader>();
-builder.Services.AddScoped<ObtenerResumenCajaHandler>();
-builder.Services.AddScoped<IProveedorRepository, ProveedorRepository>();
-builder.Services.AddScoped<RegistrarProveedorHandler>();
-builder.Services.AddScoped<ActualizarProveedorHandler>();
-builder.Services.AddScoped<DesactivarProveedorHandler>();
-builder.Services.AddScoped<ListarProveedoresHandler>();
-builder.Services.AddScoped<ObtenerProveedorPorIdHandler>();
-builder.Services.AddScoped<ICompraRepository, CompraRepository>();
-builder.Services.AddScoped<RegistrarCompraHandler>();
-builder.Services.AddScoped<ListarComprasHandler>();
-builder.Services.AddScoped<ObtenerCompraPorIdHandler>();
+    options.UseNpgsql(dataSource));
+
+// ===============================
+// Modulo Core Business: Clientes (Eds)
+// ===============================
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<ListarClientesHandler>();
+builder.Services.AddScoped<ObtenerClientePorIdHandler>();
+builder.Services.AddScoped<CrearClienteHandler>();
+builder.Services.AddScoped<ActualizarClienteHandler>();
+builder.Services.AddScoped<DesactivarClienteHandler>();
+
+// ===============================
+// Modulo Core Business: Ventas (Eds)
+// ===============================
+builder.Services.AddScoped<IVentaRepository, VentaRepository>();
+builder.Services.AddScoped<ListarVentasHandler>();
+builder.Services.AddScoped<ObtenerVentaPorIdHandler>();
+builder.Services.AddScoped<CrearVentaHandler>();
+builder.Services.AddScoped<AnularVentaHandler>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -103,16 +87,6 @@ builder.Services.AddCors(options =>
         }
     });
 });
-
-// ===============================
-// CAMBIO KEVIN: Inyección de dependencias del módulo Caja (Handlers y Adapter)
-// ===============================
-builder.Services.AddScoped<AbrirCajaHandler>();
-builder.Services.AddScoped<CerrarCajaHandler>();
-builder.Services.AddScoped<RegistrarMovimientoCajaHandler>();
-builder.Services.AddScoped<ObtenerTurnoCajaActualHandler>();
-builder.Services.AddScoped<ObtenerDetalleTurnoCajaHandler>();
-builder.Services.AddScoped<ICajaRepository, CajaRepository>();
 
 var app = builder.Build();
 
