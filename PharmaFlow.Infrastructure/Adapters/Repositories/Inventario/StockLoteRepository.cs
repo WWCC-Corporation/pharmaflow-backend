@@ -16,16 +16,17 @@ public class StockLoteRepository : IStockLoteRepository
         _dbContext = dbContext;
     }
 
-    public async Task<StockLote> ObtenerPorSucursalYLoteAsync(Guid idSucursal, Guid idLote, CancellationToken cancellationToken = default)
+    public async Task<StockLote?> ObtenerPorSucursalYLoteAsync(Guid idSucursal, Guid idLote, CancellationToken cancellationToken = default)
     {
         // Usamos StockLotes tal cual está en tu DbContext
         return await _dbContext.StockLotes
             .FirstOrDefaultAsync(x => x.IdSucursal == idSucursal && x.IdLote == idLote, cancellationToken);
     }
 
-    public Task AgregarAsync(StockLote stockLote, CancellationToken cancellationToken = default)
+    public async Task AgregarAsync(StockLote stockLote, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await _dbContext.StockLotes.AddAsync(stockLote, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task ActualizarAsync(StockLote stockLote, CancellationToken cancellationToken = default)

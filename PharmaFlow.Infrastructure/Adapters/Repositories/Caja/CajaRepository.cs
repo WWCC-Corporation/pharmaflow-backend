@@ -15,10 +15,10 @@ public class CajaRepository : ICajaRepository
         _context = context;
     }
 
-    public async Task<TurnosCaja?> GetTurnoAbiertoPorUsuarioAsync(Guid idUsuario)
+    public async Task<TurnosCaja?> GetTurnoAbiertoPorUsuarioAsync(Guid idUsuario, Guid idSucursal)
     {
         return await _context.TurnosCajas
-            .FirstOrDefaultAsync(t => t.IdUsuario == idUsuario && t.Abierto == true);
+            .FirstOrDefaultAsync(t => t.IdUsuario == idUsuario && t.IdSucursal == idSucursal && t.Abierto == true);
     }
 
     public async Task<TurnosCaja?> GetTurnoPorIdAsync(Guid idTurnoCaja)

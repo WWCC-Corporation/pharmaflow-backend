@@ -20,13 +20,14 @@ public class AbrirCajaHandler
     {
         AbrirCajaValidator.Validate(command);
 
-        var turnoExistente = await _cajaRepository.GetTurnoAbiertoPorUsuarioAsync(command.IdUsuario);
+        var turnoExistente = await _cajaRepository.GetTurnoAbiertoPorUsuarioAsync(command.IdUsuario, command.IdSucursal);
         if (turnoExistente != null)
             throw new InvalidOperationException("El usuario ya tiene una caja abierta. Debe cerrarla antes de abrir una nueva.");
 
         var nuevoTurno = new TurnosCaja
         {
             Id = Guid.NewGuid(),
+            IdSucursal = command.IdSucursal,
             IdUsuario = command.IdUsuario,
             MontoApertura = command.MontoApertura,
             Abierto = true,

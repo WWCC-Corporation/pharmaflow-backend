@@ -10,5 +10,11 @@ public class UsuarioDto
 
     public string Apellidos { get; set; } = string.Empty;
 
+    public int? IdRol { get; set; }
+
+    public string? Rol { get; set; }
+
     public bool Activo { get; set; }
+
+    public List<Guid> IdSucursales { get; set; } = new();
 }

@@ -6,6 +6,8 @@ public class VentaResponseDto
 {
     public Guid Id { get; set; }
 
+    public Guid IdSucursal { get; set; }
+
     public EstadoVenta? Estado { get; set; }
 
     public Moneda? Moneda { get; set; }

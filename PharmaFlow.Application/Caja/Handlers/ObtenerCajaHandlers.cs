@@ -17,7 +17,7 @@ public class ObtenerTurnoCajaActualHandler
 
     public async Task<AperturaCajaDto?> Handle(ObtenerTurnoCajaActualQuery query)
     {
-        var turno = await _cajaRepository.GetTurnoAbiertoPorUsuarioAsync(query.IdUsuario);
+        var turno = await _cajaRepository.GetTurnoAbiertoPorUsuarioAsync(query.IdUsuario, query.IdSucursal);
 
         if (turno == null) return null;
 

@@ -4,11 +4,15 @@ public class ActualizarUsuarioCommand
 {
     public Guid Id { get; set; }
 
-    public string Correo { get; set; } = string.Empty;
+    public string? Correo { get; set; }
 
-    public string Nombres { get; set; } = string.Empty;
+    public string? Nombres { get; set; }
 
-    public string Apellidos { get; set; } = string.Empty;
+    public string? Apellidos { get; set; }
 
-    public bool Activo { get; set; }
+    public int? IdRol { get; set; }
+
+    public bool? Activo { get; set; }
+
+    public List<Guid>? IdSucursales { get; set; }
 }

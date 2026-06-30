@@ -92,9 +92,9 @@ public class CajaController : ControllerBase
     }
 
     [HttpGet("estado/{idUsuario}")]
-    public async Task<IActionResult> ObtenerEstadoCaja(Guid idUsuario)
+    public async Task<IActionResult> ObtenerEstadoCaja(Guid idUsuario, [FromQuery] Guid idSucursal)
     {
-        var query = new ObtenerTurnoCajaActualQuery { IdUsuario = idUsuario };
+        var query = new ObtenerTurnoCajaActualQuery { IdUsuario = idUsuario, IdSucursal = idSucursal };
         var result = await _obtenerTurnoCajaActualHandler.Handle(query);
         
         if (result == null)

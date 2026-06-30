@@ -40,6 +40,7 @@ public class RegistrarMovimientoCajaHandler
         var movimiento = new MovimientosCaja
         {
             Id = Guid.NewGuid(),
+            IdSucursal = command.IdSucursal == Guid.Empty ? turno.IdSucursal : command.IdSucursal,
             IdTurnoCaja = command.IdTurnoCaja,
             IdUsuario = command.IdUsuario,
             IdVenta = command.IdVenta,
