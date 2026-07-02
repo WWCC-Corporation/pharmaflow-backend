@@ -3,7 +3,7 @@ using PharmaFlow.Application.Auth.Commands;
 using PharmaFlow.Application.Auth.DTOs;
 using PharmaFlow.Application.Auth.Handlers;
 
-namespace PharmaFlow.Persistence.Controllers;
+namespace PharmaFlow.Persistence.Controllers.Auth;
 
 [ApiController]
 [Route("api/auth")]

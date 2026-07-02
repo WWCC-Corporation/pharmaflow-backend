@@ -3,7 +3,7 @@ using PharmaFlow.Application.Usuarios.Commands;
 using PharmaFlow.Application.Usuarios.Handlers;
 using PharmaFlow.Application.Usuarios.Queries;
 
-namespace PharmaFlow.Persistence.Controllers;
+namespace PharmaFlow.Persistence.Controllers.Usuarios;
 
 [ApiController]
 [Route("api/usuarios")]
