@@ -6,6 +6,9 @@ public static class AbrirCajaValidator
 {
     public static void Validate(AbrirCajaCommand command)
     {
+        if (command.IdSucursal == Guid.Empty)
+            throw new ArgumentException("El ID de la sucursal es obligatorio.");
+
         if (command.IdUsuario == Guid.Empty)
             throw new ArgumentException("El ID del usuario es obligatorio.");
 

@@ -1,11 +1,24 @@
 using PharmaFlow.Application.Auth.Commands;
+using PharmaFlow.Domain.Ports.Repositories;
 
 namespace PharmaFlow.Application.Auth.Handlers;
 
 public class LogoutHandler
 {
-    public Task<bool> Handle(LogoutCommand command)
+    private readonly IRefreshTokenRepository refreshTokenRepository;
+
+    public LogoutHandler(IRefreshTokenRepository refreshTokenRepository)
     {
-        return Task.FromResult(true);
+        this.refreshTokenRepository = refreshTokenRepository;
+    }
+
+    public async Task Handle(LogoutCommand command, CancellationToken cancellationToken)
+    {
+        if (command.UsuarioId == Guid.Empty)
+        {
+            throw new InvalidOperationException("El usuario es requerido.");
+        }
+
+        await refreshTokenRepository.RevocarPorUsuarioAsync(command.UsuarioId, cancellationToken);
     }
 }

@@ -17,6 +17,7 @@ public class CrearVentaHandler
     {
         var venta = new Venta
         {
+            IdSucursal = command.Datos.IdSucursal,
             Moneda = command.Datos.Moneda,
             Metodo = command.Datos.Metodo,
             IdCliente = command.Datos.IdCliente,
@@ -40,6 +41,7 @@ public class CrearVentaHandler
         return new VentaResponseDto
         {
             Id = resultado.Id,
+            IdSucursal = resultado.IdSucursal,
             Estado = resultado.Estado,
             Moneda = resultado.Moneda,
             Metodo = resultado.Metodo,

@@ -65,6 +65,8 @@ public class VentaRepository : IVentaRepository
             }
         }
 
+        RegistrarMovimientosCajaSiAplica(venta);
+
         context.Ventas.Add(venta);
         await context.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
@@ -100,7 +102,7 @@ public class VentaRepository : IVentaRepository
             }
 
             var stock = await context.StockLotes
-                .FirstOrDefaultAsync(s => s.IdLote == detalle.IdLote, cancellationToken);
+                .FirstOrDefaultAsync(s => s.IdSucursal == venta.IdSucursal && s.IdLote == detalle.IdLote, cancellationToken);
 
             if (stock is not null)
             {
@@ -115,6 +117,7 @@ public class VentaRepository : IVentaRepository
                 Tipo = TipoMovimiento.DEVOLUCION,
                 IdProducto = detalle.IdProducto,
                 IdLote = detalle.IdLote,
+                IdSucursal = venta.IdSucursal,
                 IdVenta = venta.Id,
                 IdDetalleVenta = detalle.Id,
                 Cantidad = detalle.Cantidad,
@@ -138,7 +141,7 @@ public class VentaRepository : IVentaRepository
         CancellationToken cancellationToken)
     {
         var stock = await context.StockLotes
-            .FirstOrDefaultAsync(s => s.IdLote == idLote, cancellationToken);
+            .FirstOrDefaultAsync(s => s.IdSucursal == venta.IdSucursal && s.IdLote == idLote, cancellationToken);
 
         if (stock is null)
         {
@@ -160,10 +163,50 @@ public class VentaRepository : IVentaRepository
             Tipo = TipoMovimiento.SALIDA,
             IdProducto = idProducto,
             IdLote = idLote,
+            IdSucursal = venta.IdSucursal,
             IdVenta = venta.Id,
             IdDetalleVenta = detalle.Id,
             Cantidad = cantidad,
             UsuarioId = venta.IdUsuario,
+            CreatedAt = DateTime.UtcNow
+        });
+    }
+
+    private void RegistrarMovimientosCajaSiAplica(Venta venta)
+    {
+        if (venta.Metodo != MetodoPago.efectivo || !venta.IdTurnoCaja.HasValue)
+        {
+            return;
+        }
+
+        context.MovimientosCajas.Add(new MovimientosCaja
+        {
+            Id = Guid.NewGuid(),
+            IdSucursal = venta.IdSucursal,
+            IdTurnoCaja = venta.IdTurnoCaja,
+            IdVenta = venta.Id,
+            IdUsuario = venta.IdUsuario,
+            Tipo = TipoMovimientoCaja.VENTA_EFECTIVO_INGRESO,
+            Monto = venta.MontoTotal,
+            Descripcion = "Venta en efectivo",
+            CreatedAt = DateTime.UtcNow
+        });
+
+        if (venta.Vuelto <= 0)
+        {
+            return;
+        }
+
+        context.MovimientosCajas.Add(new MovimientosCaja
+        {
+            Id = Guid.NewGuid(),
+            IdSucursal = venta.IdSucursal,
+            IdTurnoCaja = venta.IdTurnoCaja,
+            IdVenta = venta.Id,
+            IdUsuario = venta.IdUsuario,
+            Tipo = TipoMovimientoCaja.VUELTO_SALIDA,
+            Monto = venta.Vuelto,
+            Descripcion = "Vuelto de venta",
             CreatedAt = DateTime.UtcNow
         });
     }
@@ -173,6 +216,11 @@ public class VentaRepository : IVentaRepository
         if (venta.DetalleVenta == null || venta.DetalleVenta.Count == 0)
         {
             throw new ArgumentException("La venta debe tener al menos un detalle.");
+        }
+
+        if (venta.IdSucursal == Guid.Empty)
+        {
+            throw new ArgumentException("La venta debe tener una sucursal.");
         }
 
         if (venta.MontoTotal <= 0)
@@ -188,7 +236,7 @@ public class VentaRepository : IVentaRepository
             throw new ArgumentException("La cantidad del detalle debe ser mayor a cero.");
         }
 
-        if (detalle.IdProducto != Guid.Empty)
+        if (detalle.IdProducto == Guid.Empty)
         {
             throw new ArgumentException("Cada detalle debe incluir un producto.");
         }

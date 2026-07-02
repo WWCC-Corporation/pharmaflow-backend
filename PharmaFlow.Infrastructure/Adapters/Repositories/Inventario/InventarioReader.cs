@@ -31,11 +31,17 @@ public class InventarioReader : IInventarioReader
     public Task<VStockPorProducto?> ObtenerStockDeProductoEnSucursalAsync(Guid idSucursal, Guid idProducto,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return _dbContext.VStockPorProductos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(v => v.IdSucursal == idSucursal && v.Id == idProducto, cancellationToken);
     }
 
-    public Task<IEnumerable<VStockFefo>> ObtenerStockFefoAsync(Guid idSucursal, Guid idProducto, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<VStockFefo>> ObtenerStockFefoAsync(Guid idSucursal, Guid idProducto, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await _dbContext.VStockFefos
+            .AsNoTracking()
+            .Where(v => v.IdSucursal == idSucursal && v.Id == idProducto)
+            .OrderBy(v => v.FechaVencimiento)
+            .ToListAsync(cancellationToken);
     }
 }

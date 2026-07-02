@@ -4,6 +4,8 @@ namespace PharmaFlow.Application.Ventas.DTOs;
 
 public class CreateVentaDto
 {
+    public Guid IdSucursal { get; set; }
+
     public Moneda Moneda { get; set; }
 
     public MetodoPago? Metodo { get; set; }

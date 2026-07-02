@@ -12,15 +12,18 @@ public class ComprasController : ControllerBase
     private readonly RegistrarCompraHandler registrarCompraHandler;
     private readonly ListarComprasHandler listarComprasHandler;
     private readonly ObtenerCompraPorIdHandler obtenerCompraPorIdHandler;
+    private readonly RecepcionarCompraHandler recepcionarCompraHandler;
 
     public ComprasController(
         RegistrarCompraHandler registrarCompraHandler,
         ListarComprasHandler listarComprasHandler,
-        ObtenerCompraPorIdHandler obtenerCompraPorIdHandler)
+        ObtenerCompraPorIdHandler obtenerCompraPorIdHandler,
+        RecepcionarCompraHandler recepcionarCompraHandler)
     {
         this.registrarCompraHandler = registrarCompraHandler;
         this.listarComprasHandler = listarComprasHandler;
         this.obtenerCompraPorIdHandler = obtenerCompraPorIdHandler;
+        this.recepcionarCompraHandler = recepcionarCompraHandler;
     }
 
     [HttpPost]
@@ -57,5 +60,26 @@ public class ComprasController : ControllerBase
         }
 
         return Ok(compra);
+    }
+
+    [HttpPost("{id:guid}/recepcionar")]
+    public async Task<IActionResult> Recepcionar(Guid id, [FromBody] RecepcionarCompraCommand command, CancellationToken cancellationToken)
+    {
+        command.IdCompra = id;
+
+        try
+        {
+            var compra = await recepcionarCompraHandler.Handle(command, cancellationToken);
+
+            return Ok(compra);
+        }
+        catch (KeyNotFoundException excepcion)
+        {
+            return NotFound(new { mensaje = excepcion.Message });
+        }
+        catch (InvalidOperationException excepcion)
+        {
+            return BadRequest(new { mensaje = excepcion.Message });
+        }
     }
 }
