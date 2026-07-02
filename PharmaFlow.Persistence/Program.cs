@@ -4,6 +4,7 @@ using Npgsql.NameTranslation;
 using PharmaFlow.Domain.Enums;
 using PharmaFlow.Domain.Ports.Repositories;
 using PharmaFlow.Domain.Ports.Services;
+using PharmaFlow.Application.Alertas.Handlers;
 using PharmaFlow.Application.Auth.Handlers;
 using PharmaFlow.Application.Caja.Handlers;
 using PharmaFlow.Application.Clientes.Handlers;
@@ -17,6 +18,7 @@ using PharmaFlow.Application.Sucursales.Handlers;
 using PharmaFlow.Application.Usuarios.Handlers;
 using PharmaFlow.Application.Ventas.Handlers;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Caja;
+using PharmaFlow.Infrastructure.Adapters.Repositories.Alertas;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Auth;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Compras;
 using PharmaFlow.Infrastructure.Adapters.Repositories.Dashboard;
@@ -72,6 +74,13 @@ var allowedOrigins = builder.Configuration
 builder.Services.AddSingleton(dataSource);
 builder.Services.AddDbContext<PharmaFlowDbContext>(options =>
     options.UseNpgsql(dataSource));
+
+// ===============================
+// Modulo Alertas
+// ===============================
+builder.Services.AddScoped<IAlertaRepository, AlertaRepository>();
+builder.Services.AddScoped<ListarAlertasHandler>();
+builder.Services.AddScoped<MarcarAlertaLeidaHandler>();
 
 // ===============================
 // Modulo Auth / Usuarios
